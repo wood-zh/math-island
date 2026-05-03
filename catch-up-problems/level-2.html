@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lv2 · 时间差追及</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #FFF5E1 0%, #FFE5E1 100%);
+    color: #5D4954;
+    margin: 0; padding: 16px;
+    line-height: 1.7; font-size: 18px;
+    min-height: 100vh;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .back-link { color: #FF6B6B; text-decoration: none; font-size: 15px; font-weight: 600; }
+  .lv-badge {
+    background: linear-gradient(135deg, #FFB7B2, #FF6B6B);
+    color: white; padding: 4px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+  }
+
+  h1 { color: #FF6B6B; font-size: 26px; text-align: center; margin: 8px 0 6px; }
+  .subtitle { text-align: center; color: #B89B9B; margin-bottom: 18px; font-size: 14px; }
+
+  .card {
+    background: white; border-radius: 18px; padding: 20px;
+    margin-bottom: 14px; box-shadow: 0 4px 14px rgba(255,154,162,0.15);
+  }
+  .card h2 { color: #FF8F73; font-size: 20px; margin: 0 0 12px; }
+
+  .think-bubble {
+    background: #FFF8E7; border-left: 4px solid #FFB7B2;
+    padding: 12px 14px; border-radius: 10px; margin: 10px 0; font-size: 16px;
+  }
+  .key-question {
+    background: linear-gradient(135deg, #E8F4FF, #DFF0FF);
+    border-radius: 14px; padding: 16px; margin: 12px 0;
+    border: 2px solid #7AB8FF;
+  }
+  .key-question .label {
+    color: #2070C8; font-weight: bold; font-size: 14px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .key-question .question {
+    font-size: 17px; margin-top: 6px; color: #5D4954;
+  }
+
+  .timeline-display {
+    background: #FFF8E7;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    text-align: center;
+  }
+  .timeline-display .clock {
+    font-size: 32px;
+    font-weight: bold;
+    color: #FF6B6B;
+    font-family: "SF Mono", Monaco, monospace;
+  }
+  .timeline-display .narration {
+    color: #555; font-size: 15px; margin-top: 6px;
+    min-height: 22px;
+  }
+
+  .track-area {
+    background: #FAFAFA; border-radius: 14px;
+    padding: 22px 14px 14px; margin: 12px 0;
+  }
+  .track-wrap { position: relative; padding: 4px 24px; }
+  .track {
+    position: relative; height: 76px;
+    background: linear-gradient(180deg, #F5F5F5 0%, #EAEAEA 100%);
+    border-radius: 8px; border: 2px solid #DDD;
+  }
+  .track::before {
+    content: ''; position: absolute;
+    left: 0; right: 0; top: 50%; height: 2px;
+    background: repeating-linear-gradient(90deg, #BBB 0px, #BBB 8px, transparent 8px, transparent 16px);
+    transform: translateY(-50%);
+  }
+  .home-marker {
+    position: absolute;
+    left: 0; top: -10px;
+    font-size: 20px;
+    transform: translateX(-50%);
+  }
+  .runner {
+    position: absolute; text-align: center;
+    transform: translateX(-50%); pointer-events: none;
+  }
+  .runner-emoji { font-size: 30px; line-height: 1; }
+  .runner-label {
+    font-size: 12px; color: #5D4954; font-weight: 700;
+    background: rgba(255,255,255,0.95);
+    padding: 1px 7px; border-radius: 6px;
+    margin-bottom: 2px; display: inline-block; border: 1px solid #EEE;
+  }
+  #runner-mom { bottom: 42px; }
+  #runner-kid { bottom: -2px; }
+  #runner-kid.at-home::after {
+    content: '🏠';
+    position: absolute;
+    left: 50%; top: -6px;
+    font-size: 18px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .lead-marker {
+    position: absolute;
+    bottom: 28px; height: 8px;
+    background: linear-gradient(90deg, transparent, #FF6B6B);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .lead-marker.show { opacity: 0.5; }
+
+  .info-row {
+    display: flex; justify-content: space-around;
+    background: #FFF0E5; border-radius: 12px;
+    padding: 10px; margin: 12px 0 4px; gap: 8px;
+  }
+  .info-item { text-align: center; flex: 1; }
+  .info-label { font-size: 12px; color: #A88; }
+  .info-value {
+    font-size: 19px; font-weight: bold;
+    color: #FF6B6B; margin-top: 2px;
+  }
+
+  .speed-control {
+    background: #FFF8E7; border-radius: 12px;
+    padding: 12px 14px; margin: 10px 0;
+  }
+  .speed-control label {
+    display: block; font-weight: 600; margin-bottom: 6px; font-size: 15px;
+  }
+  .speed-control .value { color: #FF6B6B; font-weight: bold; }
+  input[type="range"] {
+    width: 100%; height: 32px;
+    -webkit-appearance: none; appearance: none; background: transparent;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px; background: #FFD3D3; border-radius: 4px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    height: 28px; width: 28px; border-radius: 50%;
+    background: #FF6B6B; margin-top: -10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .button-row { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+  button {
+    flex: 1; min-width: 130px; padding: 13px 10px;
+    border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: transform 0.1s;
+  }
+  button:active { transform: scale(0.96); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #FF6B6B; color: white; }
+  .btn-secondary { background: #B5EAD7; color: #2A6B5E; }
+  .btn-blue { background: #7AB8FF; color: white; }
+  .btn-small { flex: 0 0 auto; padding: 8px 14px; font-size: 14px; min-width: auto; }
+
+  .hint {
+    background: #E8F4FF; border-radius: 10px;
+    padding: 12px 14px; margin: 10px 0;
+    border-left: 4px solid #7AB8FF; font-size: 15px;
+  }
+  .hint.success { background: #DFF7E5; border-left-color: #4CC76C; }
+  .hint.warning { background: #FFF1D6; border-left-color: #F0B232; }
+
+  .formula-box {
+    background: linear-gradient(135deg, #FFF8E7 0%, #FFE5E1 100%);
+    border-radius: 14px; padding: 16px;
+    text-align: center; margin: 14px 0;
+    border: 2px dashed #FFB7B2;
+  }
+  .formula { font-size: 20px; font-weight: bold; color: #FF6B6B; margin: 8px 0; }
+  .formula-note { font-size: 12px; color: #888; }
+
+  .step {
+    background: #FAFAFA; border-radius: 10px;
+    padding: 12px 14px; margin: 8px 0;
+    border-left: 4px solid #B5EAD7; font-size: 15px;
+  }
+  .step.highlight {
+    background: linear-gradient(90deg, #FFF8E7, #FFFFFF);
+    border-left-color: #FFB852;
+  }
+  .step-num {
+    background: #B5EAD7; color: #2A6B5E;
+    border-radius: 50%; width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: bold; margin-right: 6px; font-size: 13px; vertical-align: -2px;
+  }
+  .step.highlight .step-num { background: #FFB852; color: white; }
+
+  .quiz-card {
+    background: #F4FAFF; border-radius: 12px;
+    padding: 14px 16px; margin: 12px 0;
+  }
+  .quiz-question { font-size: 15px; margin-bottom: 10px; line-height: 1.6; }
+  .quiz-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .quiz-input {
+    width: 80px; padding: 8px 10px;
+    border: 2px solid #DDD; border-radius: 8px;
+    font-size: 17px; text-align: center; font-family: inherit;
+  }
+  .quiz-input:focus { outline: none; border-color: #FF6B6B; }
+  .quiz-feedback {
+    margin-top: 10px; padding: 10px 12px;
+    border-radius: 8px; display: none;
+    font-weight: 600; font-size: 14px; line-height: 1.6;
+  }
+  .quiz-feedback.correct { background: #D4EDDA; color: #155724; display: block; }
+  .quiz-feedback.wrong { background: #FFE5E1; color: #B85C5C; display: block; }
+
+  .complete-card {
+    background: linear-gradient(135deg, #FFE5E1, #B5EAD7);
+    border-radius: 16px; padding: 22px;
+    text-align: center; margin: 18px 0;
+  }
+  .complete-card .big-emoji { font-size: 48px; }
+  .complete-card .title {
+    font-size: 22px; font-weight: bold;
+    color: #5D4954; margin: 10px 0;
+  }
+  .complete-card .nav-buttons {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+
+  .tip-emoji { font-size: 20px; margin-right: 4px; }
+  p { margin: 6px 0; }
+  strong { color: #C44; }
+  .delay-highlight {
+    background: linear-gradient(180deg, transparent 60%, #FFE066 60%);
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="nav-bar">
+    <a href="index.html" class="back-link">← 回到目录</a>
+    <span class="lv-badge">LV 2</span>
+  </div>
+
+  <h1>时间差追及</h1>
+  <p class="subtitle">一前一后出发 · 进阶关</p>
+
+  <!-- 卡片1:故事 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📖</span>今天的故事</h2>
+    <p>妈妈 <strong>8:00</strong> 出门去买菜,每分钟走 <strong>60 米</strong>。</p>
+    <p><span class="delay-highlight">8:04</span> 哥哥发现妈妈忘带购物袋,赶紧跑去追,每分钟跑 <strong>90 米</strong>。</p>
+    <p>问:哥哥要追多久才能追上妈妈?</p>
+
+    <div class="think-bubble">
+      <span class="tip-emoji">🤔</span>
+      <strong>这道题和 Lv1 不一样在哪里?</strong><br>
+      Lv1 里我们直接知道「距离差」是多少。这道题里只告诉我们 <strong>时间差(4 分钟)</strong>,没说哥哥出发时妈妈在哪!
+    </div>
+  </div>
+
+  <!-- 卡片2:关键问题 -->
+  <div class="card">
+    <h2><span class="tip-emoji">🔑</span>解开难题的钥匙</h2>
+    <div class="key-question">
+      <div class="label">最关键的一个问题</div>
+      <div class="question">哥哥出发的那一刻,妈妈已经走出多远了?</div>
+    </div>
+    <p>只要算出这个数,这题就变成 Lv1 那种有「距离差」的简单题啦~</p>
+    <p>👇 下面的动画里,我们先让妈妈一个人走 4 分钟,看看她到哪了:</p>
+  </div>
+
+  <!-- 卡片3:互动 -->
+  <div class="card">
+    <h2><span class="tip-emoji">🎮</span>分两步看清楚</h2>
+
+    <div class="timeline-display">
+      <div class="clock" id="clock">8:00</div>
+      <div class="narration" id="narration">妈妈准备出门啦~</div>
+    </div>
+
+    <div class="track-area">
+      <div class="track-wrap">
+        <div class="track" id="track">
+          <div class="home-marker">🏠</div>
+          <div class="lead-marker" id="lead-marker"></div>
+          <div class="runner" id="runner-mom">
+            <div class="runner-label">妈妈</div>
+            <div class="runner-emoji">👩</div>
+          </div>
+          <div class="runner at-home" id="runner-kid">
+            <div class="runner-emoji">👦</div>
+            <div class="runner-label">哥哥</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-item">
+          <div class="info-label">妈妈走了</div>
+          <div class="info-value"><span id="mom-dist">0</span> 米</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">哥哥走了</div>
+          <div class="info-value"><span id="kid-dist">0</span> 米</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">距离差</div>
+          <div class="info-value"><span id="gap">0</span> 米</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="speed-control">
+      <label>👩 妈妈速度: <span class="value"><span id="speed-mom-val">60</span> 米/分钟</span></label>
+      <input type="range" id="speed-mom" min="20" max="120" value="60" step="10">
+    </div>
+    <div class="speed-control">
+      <label>👦 哥哥速度: <span class="value"><span id="speed-kid-val">90</span> 米/分钟</span></label>
+      <input type="range" id="speed-kid" min="20" max="200" value="90" step="10">
+    </div>
+    <div class="speed-control">
+      <label>⏰ 时间差: <span class="value"><span id="delay-val">4</span> 分钟</span></label>
+      <input type="range" id="delay" min="1" max="8" value="4" step="1">
+    </div>
+
+    <div class="button-row">
+      <button class="btn-blue" id="btn-phase1">🏠 妈妈先走</button>
+      <button class="btn-primary" id="btn-phase2" disabled>🏃 哥哥追!</button>
+      <button class="btn-secondary" id="btn-reset">🔄 重新来</button>
+    </div>
+
+    <div class="hint" id="dynamic-hint">
+      <span class="tip-emoji">💡</span>
+      <span id="hint-text">先按「妈妈先走」,看妈妈 4 分钟走了多远~</span>
+    </div>
+  </div>
+
+  <!-- 卡片4:解题步骤 -->
+  <div class="card">
+    <h2><span class="tip-emoji">✏️</span>完整解题步骤</h2>
+    <p>看完动画,你应该发现这道题分两步:</p>
+
+    <div class="step highlight">
+      <span class="step-num">1</span><strong>先算「距离差」</strong>:<br>
+      &nbsp;&nbsp;&nbsp;妈妈先走的时间 × 妈妈速度<br>
+      &nbsp;&nbsp;&nbsp;= 4 × 60 = <span style="color:#FF6B6B;font-weight:bold;">240 米</span>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span><strong>速度差</strong>:90 − 60 = <span style="color:#FF6B6B;font-weight:bold;">30 米/分钟</span>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span><strong>追上时间</strong>:240 ÷ 30 = <span style="color:#FF6B6B;font-weight:bold;">8 分钟</span>
+    </div>
+
+    <div class="formula-box">
+      <div>这一关的新公式:</div>
+      <div class="formula">距离差 = 时间差 × 先走的人速度</div>
+      <div class="formula-note">(算出距离差以后,就和 Lv1 一样了!)</div>
+    </div>
+  </div>
+
+  <!-- 卡片5:变式题 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📝</span>你来试试看(2 道)</h2>
+
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 1 题:</strong>小张 9:00 出发去图书馆,每分钟走 50 米。<br>
+        9:03 小李从同一地点出发去追,每分钟走 80 米。<br>
+        小李要追多久才能追上小张?
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q1" inputmode="numeric"> 分钟
+        <button class="btn-secondary btn-small" onclick="checkAnswer(1, 5)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 2 题:</strong>爸爸先出发,每分钟骑 200 米。<br>
+        7 分钟后,妈妈也从家出发追,每分钟骑 250 米。<br>
+        妈妈要追多久才能追上爸爸?
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q2" inputmode="numeric"> 分钟
+        <button class="btn-secondary btn-small" onclick="checkAnswer(2, 28)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+  </div>
+
+  <!-- 完成 -->
+  <div class="complete-card" id="complete-card" style="display:none;">
+    <div class="big-emoji">🎉</div>
+    <div class="title">第 2 关通过!</div>
+    <p>你学会了一个超重要的招数:<br><strong>把时间差变成距离差,就回到 Lv1!</strong></p>
+    <p style="font-size:14px;color:#777;">下一关:倒过来想——已知追上时间,反求速度。</p>
+    <div class="nav-buttons">
+      <a href="level-1.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">← LV 1</button></a>
+      <a href="index.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">回目录</button></a>
+      <a href="level-3.html" style="flex:1;text-decoration:none;"><button class="btn-primary">LV 3 →</button></a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const TRACK_LENGTH_METERS = 800;
+
+  const state = {
+    phase: 0, // 0=initial, 1=mom-only, 2=both, 3=caught
+    timeMin: 0, // total minutes since mom started
+    posMom: 0, posKid: 0,
+    speedMom: 60, speedKid: 90, delay: 4,
+    running: false, lastTimestamp: null,
+  };
+
+  const trackEl = document.getElementById('track');
+  const runnerMom = document.getElementById('runner-mom');
+  const runnerKid = document.getElementById('runner-kid');
+  const leadMarker = document.getElementById('lead-marker');
+  const clockEl = document.getElementById('clock');
+  const narrationEl = document.getElementById('narration');
+  const momDistEl = document.getElementById('mom-dist');
+  const kidDistEl = document.getElementById('kid-dist');
+  const gapEl = document.getElementById('gap');
+  const speedMomVal = document.getElementById('speed-mom-val');
+  const speedKidVal = document.getElementById('speed-kid-val');
+  const delayVal = document.getElementById('delay-val');
+  const speedMomSlider = document.getElementById('speed-mom');
+  const speedKidSlider = document.getElementById('speed-kid');
+  const delaySlider = document.getElementById('delay');
+  const btnPhase1 = document.getElementById('btn-phase1');
+  const btnPhase2 = document.getElementById('btn-phase2');
+  const btnReset = document.getElementById('btn-reset');
+  const hintBox = document.getElementById('dynamic-hint');
+  const hintText = document.getElementById('hint-text');
+
+  function metersToPx(m) { return (m / TRACK_LENGTH_METERS) * trackEl.offsetWidth; }
+
+  function timeToClock(min) {
+    const h = 8 + Math.floor(min / 60);
+    const m = Math.floor(min % 60);
+    const s = Math.floor((min % 1) * 60);
+    return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function updateUI() {
+    runnerMom.style.left = metersToPx(state.posMom) + 'px';
+    runnerKid.style.left = metersToPx(state.posKid) + 'px';
+    momDistEl.textContent = Math.round(state.posMom);
+    kidDistEl.textContent = Math.round(state.posKid);
+    gapEl.textContent = Math.round(Math.max(0, state.posMom - state.posKid));
+    clockEl.textContent = timeToClock(state.timeMin);
+
+    // Lead marker
+    if (state.phase === 2 || state.phase === 3) {
+      leadMarker.style.left = metersToPx(state.posKid) + 'px';
+      leadMarker.style.width = Math.max(0, metersToPx(state.posMom) - metersToPx(state.posKid)) + 'px';
+      leadMarker.classList.add('show');
+    } else if (state.phase === 1 && state.posMom > 0) {
+      leadMarker.style.left = '0px';
+      leadMarker.style.width = metersToPx(state.posMom) + 'px';
+      leadMarker.classList.add('show');
+    } else {
+      leadMarker.classList.remove('show');
+    }
+
+    // Kid at-home indicator
+    if (state.phase < 2) runnerKid.classList.add('at-home');
+    else runnerKid.classList.remove('at-home');
+  }
+
+  function setNarration(text) { narrationEl.textContent = text; }
+  function setHint(html, type) {
+    hintBox.classList.remove('success', 'warning');
+    if (type) hintBox.classList.add(type);
+    hintText.innerHTML = html;
+  }
+
+  function tick(timestamp) {
+    if (!state.running) return;
+    if (state.lastTimestamp === null) state.lastTimestamp = timestamp;
+    const dt = (timestamp - state.lastTimestamp) / 1000;
+    state.lastTimestamp = timestamp;
+
+    if (state.phase === 1) {
+      // Mom only
+      const remaining = state.delay - state.timeMin;
+      const step = Math.min(dt, remaining);
+      state.timeMin += step;
+      state.posMom += state.speedMom * step;
+
+      if (state.timeMin >= state.delay - 0.001) {
+        state.timeMin = state.delay;
+        state.posMom = state.speedMom * state.delay;
+        state.running = false;
+        state.phase = 1; // stay at end of phase 1
+        btnPhase2.disabled = false;
+        btnPhase1.disabled = true;
+        const lead = state.posMom;
+        setNarration(`妈妈现在领先 ${Math.round(lead)} 米!`);
+        setHint(`<span class="tip-emoji">✨</span>看!妈妈一个人走了 ${state.delay} 分钟,领先了 <strong>${Math.round(lead)} 米</strong>。<br>这就是哥哥要追的「距离差」!现在按「哥哥追!」`, 'success');
+      }
+    } else if (state.phase === 2) {
+      // Both moving
+      state.timeMin += dt;
+      state.posMom += state.speedMom * dt;
+      state.posKid += state.speedKid * dt;
+
+      if (state.posKid >= state.posMom) {
+        state.posKid = state.posMom;
+        state.phase = 3;
+        state.running = false;
+        const chaseTime = state.timeMin - state.delay;
+        setNarration(`追上啦!哥哥追了 ${chaseTime.toFixed(1)} 分钟。`);
+        setHint(`<span class="tip-emoji">🎉</span>哥哥用了 <strong>${chaseTime.toFixed(1)} 分钟</strong> 追上妈妈!`, 'success');
+        btnPhase2.disabled = true;
+      }
+
+      if (state.posMom > TRACK_LENGTH_METERS - 20) {
+        state.running = false;
+        if (state.phase !== 3) {
+          setNarration('妈妈跑出跑道了~');
+          setHint('😢 没追上。把哥哥调更快试试?', 'warning');
+        }
+      }
+    }
+
+    updateUI();
+    if (state.running) requestAnimationFrame(tick);
+  }
+
+  function reset() {
+    state.phase = 0;
+    state.timeMin = 0;
+    state.posMom = 0;
+    state.posKid = 0;
+    state.running = false;
+    state.lastTimestamp = null;
+    btnPhase1.disabled = false;
+    btnPhase2.disabled = true;
+    setNarration('妈妈准备出门啦~');
+    setHint(`先按「妈妈先走」,看妈妈 ${state.delay} 分钟走了多远~`, null);
+    updateUI();
+  }
+
+  speedMomSlider.addEventListener('input', e => {
+    state.speedMom = parseInt(e.target.value);
+    speedMomVal.textContent = state.speedMom;
+    if (state.phase === 0) reset();
+  });
+  speedKidSlider.addEventListener('input', e => {
+    state.speedKid = parseInt(e.target.value);
+    speedKidVal.textContent = state.speedKid;
+    if (state.phase === 0) reset();
+  });
+  delaySlider.addEventListener('input', e => {
+    state.delay = parseInt(e.target.value);
+    delayVal.textContent = state.delay;
+    if (state.phase === 0) reset();
+  });
+
+  btnPhase1.addEventListener('click', () => {
+    state.phase = 1;
+    state.running = true;
+    state.lastTimestamp = null;
+    setNarration('妈妈出门了…');
+    setHint(`妈妈每分钟走 ${state.speedMom} 米,看她 ${state.delay} 分钟能走多远?`);
+    btnPhase1.disabled = true;
+    requestAnimationFrame(tick);
+  });
+
+  btnPhase2.addEventListener('click', () => {
+    state.phase = 2;
+    state.running = true;
+    state.lastTimestamp = null;
+    setNarration('哥哥追出门啦!');
+    const diff = state.speedKid - state.speedMom;
+    if (diff <= 0) {
+      setHint(`⚠️ 哥哥 (${state.speedKid}) 没有妈妈快 (${state.speedMom}),追不上!`, 'warning');
+    } else {
+      setHint(`哥哥每分钟比妈妈快 ${diff} 米,所以每分钟追近 ${diff} 米~`);
+    }
+    btnPhase2.disabled = true;
+    requestAnimationFrame(tick);
+  });
+
+  btnReset.addEventListener('click', reset);
+
+  reset();
+  window.addEventListener('resize', updateUI);
+})();
+
+let correctCount = 0;
+function checkAnswer(num, correct) {
+  const input = document.getElementById('q' + num);
+  const fb = document.getElementById('fb' + num);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'quiz-feedback wrong';
+    fb.textContent = '先填一个数字哦~';
+    return;
+  }
+  if (Math.abs(val - correct) < 0.01) {
+    fb.className = 'quiz-feedback correct';
+    if (num === 1) {
+      fb.innerHTML = '🎉 答对啦!<br>距离差 = 50 × 3 = 150 米<br>速度差 = 80 − 50 = 30 米/分钟<br>追上时间 = 150 ÷ 30 = <strong>5 分钟</strong>';
+    } else {
+      fb.innerHTML = '🎉 答对啦!<br>距离差 = 200 × 7 = 1400 米<br>速度差 = 250 − 200 = 50 米/分钟<br>追上时间 = 1400 ÷ 50 = <strong>28 分钟</strong>';
+    }
+    if (!input.dataset.counted) {
+      correctCount++;
+      input.dataset.counted = '1';
+      checkComplete();
+    }
+  } else {
+    fb.className = 'quiz-feedback wrong';
+    if (num === 1) {
+      fb.innerHTML = '差一点点~先想:小李出发时,小张已经走了多远?(用「时间差 × 小张速度」)';
+    } else {
+      fb.innerHTML = '差一点点~先算:7 分钟里爸爸骑了多少米?然后再用 Lv1 的方法。';
+    }
+  }
+}
+function checkComplete() {
+  if (correctCount >= 2) {
+    localStorage.setItem('catch-up-lv2-done', '1');
+    document.getElementById('complete-card').style.display = 'block';
+    document.getElementById('complete-card').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+</script>
+</body>
+</html>

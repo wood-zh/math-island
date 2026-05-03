@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lv3 · 反过来求</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #FFF5E1 0%, #FFE5E1 100%);
+    color: #5D4954;
+    margin: 0; padding: 16px;
+    line-height: 1.7; font-size: 18px;
+    min-height: 100vh;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .back-link { color: #FF6B6B; text-decoration: none; font-size: 15px; font-weight: 600; }
+  .lv-badge {
+    background: linear-gradient(135deg, #FFB7B2, #FF6B6B);
+    color: white; padding: 4px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+  }
+
+  h1 { color: #FF6B6B; font-size: 26px; text-align: center; margin: 8px 0 6px; }
+  .subtitle { text-align: center; color: #B89B9B; margin-bottom: 18px; font-size: 14px; }
+
+  .card {
+    background: white; border-radius: 18px; padding: 20px;
+    margin-bottom: 14px; box-shadow: 0 4px 14px rgba(255,154,162,0.15);
+  }
+  .card h2 { color: #FF8F73; font-size: 20px; margin: 0 0 12px; }
+
+  .think-bubble {
+    background: #FFF8E7; border-left: 4px solid #FFB7B2;
+    padding: 12px 14px; border-radius: 10px; margin: 10px 0; font-size: 16px;
+  }
+
+  .known-box {
+    background: #F4FAFF;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 10px 0;
+  }
+  .known-box .label { color: #2070C8; font-size: 13px; font-weight: bold; margin-bottom: 6px; }
+  .known-item { font-size: 16px; padding: 4px 0; }
+  .known-item .check { color: #4CC76C; margin-right: 6px; }
+  .known-item .question { color: #FF6B6B; font-weight: bold; }
+
+  .track-area {
+    background: #FAFAFA; border-radius: 14px;
+    padding: 22px 14px 14px; margin: 12px 0;
+  }
+  .track-wrap { position: relative; padding: 4px 24px; }
+  .track {
+    position: relative; height: 70px;
+    background: linear-gradient(180deg, #F5F5F5 0%, #EAEAEA 100%);
+    border-radius: 8px; border: 2px solid #DDD;
+  }
+  .track::before {
+    content: ''; position: absolute;
+    left: 0; right: 0; top: 50%; height: 2px;
+    background: repeating-linear-gradient(90deg, #BBB 0px, #BBB 8px, transparent 8px, transparent 16px);
+    transform: translateY(-50%);
+  }
+  .runner {
+    position: absolute; text-align: center;
+    transform: translateX(-50%); pointer-events: none;
+  }
+  .runner-emoji { font-size: 28px; line-height: 1; }
+  .runner-label {
+    font-size: 12px; color: #5D4954; font-weight: 700;
+    background: rgba(255,255,255,0.95);
+    padding: 1px 7px; border-radius: 6px;
+    margin-bottom: 2px; display: inline-block; border: 1px solid #EEE;
+  }
+  #runner-dog { bottom: 38px; }
+  #runner-bro { bottom: -2px; }
+
+  .info-row {
+    display: flex; justify-content: space-around;
+    background: #FFF0E5; border-radius: 12px;
+    padding: 10px; margin: 12px 0 4px; gap: 8px;
+  }
+  .info-item { text-align: center; flex: 1; }
+  .info-label { font-size: 12px; color: #A88; }
+  .info-value { font-size: 19px; font-weight: bold; color: #FF6B6B; margin-top: 2px; }
+
+  .target-display {
+    background: linear-gradient(135deg, #E8F4FF, #DFF0FF);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    text-align: center;
+  }
+  .target-display .label { font-size: 13px; color: #2070C8; font-weight: bold; }
+  .target-display .value {
+    font-size: 24px; color: #2070C8; font-weight: bold; margin-top: 4px;
+  }
+  .target-display.match {
+    background: linear-gradient(135deg, #DFF7E5, #C8F0CC);
+  }
+  .target-display.match .label,
+  .target-display.match .value { color: #2A6B5E; }
+
+  .speed-control {
+    background: #FFF8E7; border-radius: 12px;
+    padding: 12px 14px; margin: 10px 0;
+  }
+  .speed-control label {
+    display: block; font-weight: 600; margin-bottom: 6px; font-size: 15px;
+  }
+  .speed-control .value { color: #FF6B6B; font-weight: bold; }
+  input[type="range"] {
+    width: 100%; height: 32px;
+    -webkit-appearance: none; appearance: none; background: transparent;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px; background: #FFD3D3; border-radius: 4px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    height: 28px; width: 28px; border-radius: 50%;
+    background: #FF6B6B; margin-top: -10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .button-row { display: flex; gap: 10px; margin: 12px 0; }
+  button {
+    flex: 1; padding: 13px 16px;
+    border: none; border-radius: 12px;
+    font-size: 17px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: transform 0.1s;
+  }
+  button:active { transform: scale(0.96); }
+  .btn-primary { background: #FF6B6B; color: white; }
+  .btn-secondary { background: #B5EAD7; color: #2A6B5E; }
+  .btn-small { flex: 0 0 auto; padding: 8px 14px; font-size: 14px; }
+
+  .hint {
+    background: #E8F4FF; border-radius: 10px;
+    padding: 12px 14px; margin: 10px 0;
+    border-left: 4px solid #7AB8FF; font-size: 15px;
+  }
+  .hint.success { background: #DFF7E5; border-left-color: #4CC76C; }
+  .hint.warning { background: #FFF1D6; border-left-color: #F0B232; }
+
+  .formula-box {
+    background: linear-gradient(135deg, #FFF8E7 0%, #FFE5E1 100%);
+    border-radius: 14px; padding: 16px;
+    text-align: center; margin: 14px 0;
+    border: 2px dashed #FFB7B2;
+  }
+  .formula { font-size: 19px; font-weight: bold; color: #FF6B6B; margin: 8px 0; }
+  .formula-note { font-size: 12px; color: #888; }
+
+  .step {
+    background: #FAFAFA; border-radius: 10px;
+    padding: 12px 14px; margin: 8px 0;
+    border-left: 4px solid #B5EAD7; font-size: 15px;
+  }
+  .step-num {
+    background: #B5EAD7; color: #2A6B5E;
+    border-radius: 50%; width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: bold; margin-right: 6px; font-size: 13px; vertical-align: -2px;
+  }
+
+  .reveal-section {
+    background: linear-gradient(135deg, #F4FAFF, #E8F4FF);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 14px 0;
+  }
+  .reveal-section.hidden { display: none; }
+  .reveal-section h3 {
+    color: #2070C8;
+    font-size: 17px;
+    margin: 0 0 10px;
+  }
+
+  .reveal-btn {
+    display: block;
+    width: 100%;
+    background: #7AB8FF;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 12px 0;
+    border: none;
+    font-size: 16px;
+    font-family: inherit;
+  }
+
+  .quiz-card {
+    background: #F4FAFF; border-radius: 12px;
+    padding: 14px 16px; margin: 12px 0;
+  }
+  .quiz-question { font-size: 15px; margin-bottom: 10px; line-height: 1.6; }
+  .quiz-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .quiz-input {
+    width: 80px; padding: 8px 10px;
+    border: 2px solid #DDD; border-radius: 8px;
+    font-size: 17px; text-align: center; font-family: inherit;
+  }
+  .quiz-input:focus { outline: none; border-color: #FF6B6B; }
+  .quiz-feedback {
+    margin-top: 10px; padding: 10px 12px;
+    border-radius: 8px; display: none;
+    font-weight: 600; font-size: 14px; line-height: 1.6;
+  }
+  .quiz-feedback.correct { background: #D4EDDA; color: #155724; display: block; }
+  .quiz-feedback.wrong { background: #FFE5E1; color: #B85C5C; display: block; }
+
+  .complete-card {
+    background: linear-gradient(135deg, #FFE5E1, #B5EAD7);
+    border-radius: 16px; padding: 22px;
+    text-align: center; margin: 18px 0;
+  }
+  .complete-card .big-emoji { font-size: 48px; }
+  .complete-card .title {
+    font-size: 22px; font-weight: bold;
+    color: #5D4954; margin: 10px 0;
+  }
+  .complete-card .nav-buttons {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+
+  .tip-emoji { font-size: 20px; margin-right: 4px; }
+  p { margin: 6px 0; }
+  strong { color: #C44; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="nav-bar">
+    <a href="index.html" class="back-link">← 回到目录</a>
+    <span class="lv-badge">LV 3</span>
+  </div>
+
+  <h1>反过来求</h1>
+  <p class="subtitle">公式倒着用 · 高阶关</p>
+
+  <!-- 卡片1:故事 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📖</span>今天的故事</h2>
+    <p>哥哥放学回家路上看见小狗在前面 <strong>200 米</strong> 处跑。</p>
+    <p>哥哥每分钟能跑 <strong>100 米</strong>,他追了 <strong>5 分钟</strong> 追上了小狗。</p>
+    <p>问:小狗每分钟跑多少米?</p>
+
+    <div class="known-box">
+      <div class="label">📋 我们知道什么 / 要求什么:</div>
+      <div class="known-item"><span class="check">✓</span> 距离差:200 米</div>
+      <div class="known-item"><span class="check">✓</span> 哥哥速度:100 米/分钟</div>
+      <div class="known-item"><span class="check">✓</span> 追上用了:5 分钟</div>
+      <div class="known-item"><span class="question">? 求:小狗每分钟跑多少米?</span></div>
+    </div>
+
+    <div class="think-bubble">
+      <span class="tip-emoji">🤔</span>
+      <strong>这次反过来啦!</strong><br>
+      Lv1 是「给速度,求时间」。这次是「给时间,求速度」。<br>
+      公式怎么倒着用?
+    </div>
+  </div>
+
+  <!-- 卡片2:互动猜测 -->
+  <div class="card">
+    <h2><span class="tip-emoji">🎮</span>用试错法找答案</h2>
+    <p>下面拖滑块给小狗设个速度,看看哥哥要追多久。<br>
+    <strong>目标:让追上时间正好等于 5 分钟。</strong></p>
+
+    <div class="target-display" id="target-display">
+      <div class="label">如果小狗这个速度,哥哥需要追:</div>
+      <div class="value"><span id="catch-time">--</span></div>
+    </div>
+
+    <div class="track-area">
+      <div class="track-wrap">
+        <div class="track" id="track">
+          <div class="runner" id="runner-dog">
+            <div class="runner-label">小狗</div>
+            <div class="runner-emoji">🐕</div>
+          </div>
+          <div class="runner" id="runner-bro">
+            <div class="runner-emoji">🏃‍♂️</div>
+            <div class="runner-label">哥哥</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-item">
+          <div class="info-label">已经过</div>
+          <div class="info-value"><span id="time">0.0</span> 分</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">距离差</div>
+          <div class="info-value"><span id="gap">200</span> 米</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="speed-control">
+      <label>🐕 小狗速度: <span class="value"><span id="speed-dog-val">80</span> 米/分钟</span></label>
+      <input type="range" id="speed-dog" min="20" max="95" value="80" step="5">
+    </div>
+
+    <div class="button-row">
+      <button class="btn-primary" id="btn-start">▶️ 开始追</button>
+      <button class="btn-secondary" id="btn-reset">🔄 重新来</button>
+    </div>
+
+    <div class="hint" id="dynamic-hint">
+      <span class="tip-emoji">💡</span>
+      <span id="hint-text">移动滑块改小狗速度,看预测的追上时间。试着让它正好是 5 分钟~</span>
+    </div>
+  </div>
+
+  <!-- 卡片3:点击揭示算法 -->
+  <button class="reveal-btn" id="btn-reveal">🤔 算出来了吗?点这里看怎么用算的</button>
+
+  <div class="reveal-section hidden" id="reveal-section">
+    <h3>✨ 用公式直接算的方法</h3>
+    <p>试错法虽然能找到答案,但每次都试太慢了。其实公式可以倒过来用!</p>
+
+    <div class="step">
+      <span class="step-num">1</span>
+      <strong>记得 Lv1 的公式吗?</strong><br>
+      &nbsp;&nbsp;&nbsp;追上时间 = 距离差 ÷ 速度差
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <strong>已知追上时间 = 5,距离差 = 200,反过来:</strong><br>
+      &nbsp;&nbsp;&nbsp;速度差 = 距离差 ÷ 时间<br>
+      &nbsp;&nbsp;&nbsp;速度差 = 200 ÷ 5 = <span style="color:#FF6B6B;font-weight:bold;">40 米/分钟</span>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <strong>哥哥比小狗快 40,所以:</strong><br>
+      &nbsp;&nbsp;&nbsp;小狗速度 = 哥哥速度 − 速度差<br>
+      &nbsp;&nbsp;&nbsp;= 100 − 40 = <span style="color:#FF6B6B;font-weight:bold;">60 米/分钟</span>
+    </div>
+
+    <div class="formula-box">
+      <div>反过来用公式:</div>
+      <div class="formula">速度差 = 距离差 ÷ 追上时间</div>
+      <div class="formula-note">(知道结果,反推过程)</div>
+    </div>
+  </div>
+
+  <!-- 卡片4:变式题 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📝</span>你来试试看(2 道)</h2>
+
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 1 题:</strong>弟弟在哥哥前面 240 米。<br>
+        哥哥用 6 分钟追上了弟弟。哥哥每分钟跑 90 米。<br>
+        弟弟每分钟跑多少米?
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q1" inputmode="numeric"> 米/分钟
+        <button class="btn-secondary btn-small" onclick="checkAnswer(1, 50)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 2 题:</strong>姐姐每分钟跑 120 米,妹妹每分钟跑 80 米。<br>
+        姐姐用 4 分钟追上妹妹。姐姐一开始离妹妹有多远?
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q2" inputmode="numeric"> 米
+        <button class="btn-secondary btn-small" onclick="checkAnswer(2, 160)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+  </div>
+
+  <!-- 完成 -->
+  <div class="complete-card" id="complete-card" style="display:none;">
+    <div class="big-emoji">🎉</div>
+    <div class="title">第 3 关通过!</div>
+    <p>你掌握了一个超棒的思维:<br><strong>同一个公式,反着用就能解新题!</strong></p>
+    <p style="font-size:14px;color:#777;">前 3 关都通了~Lv4、Lv5 我们之后解锁。</p>
+    <div class="nav-buttons">
+      <a href="level-2.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">← LV 2</button></a>
+      <a href="index.html" style="flex:1;text-decoration:none;"><button class="btn-primary">回目录看进度</button></a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const TRACK_LENGTH_METERS = 600;
+  const DOG_START = 200;
+  const BRO_SPEED = 100;
+  const TARGET_TIME = 5;
+
+  const state = {
+    timeMin: 0, posDog: DOG_START, posBro: 0,
+    speedDog: 80,
+    running: false, lastTimestamp: null,
+    finished: false
+  };
+
+  const trackEl = document.getElementById('track');
+  const runnerDog = document.getElementById('runner-dog');
+  const runnerBro = document.getElementById('runner-bro');
+  const timeEl = document.getElementById('time');
+  const gapEl = document.getElementById('gap');
+  const catchTimeEl = document.getElementById('catch-time');
+  const targetDisplay = document.getElementById('target-display');
+  const speedDogVal = document.getElementById('speed-dog-val');
+  const speedDogSlider = document.getElementById('speed-dog');
+  const btnStart = document.getElementById('btn-start');
+  const btnReset = document.getElementById('btn-reset');
+  const hintBox = document.getElementById('dynamic-hint');
+  const hintText = document.getElementById('hint-text');
+
+  function metersToPx(m) { return (m / TRACK_LENGTH_METERS) * trackEl.offsetWidth; }
+  function predictCatchTime(speedDog) {
+    const diff = BRO_SPEED - speedDog;
+    if (diff <= 0) return Infinity;
+    return DOG_START / diff;
+  }
+
+  function updatePrediction() {
+    const t = predictCatchTime(state.speedDog);
+    targetDisplay.classList.remove('match');
+    if (!isFinite(t)) {
+      catchTimeEl.textContent = '永远追不上';
+    } else {
+      catchTimeEl.textContent = t.toFixed(1) + ' 分钟';
+      if (Math.abs(t - TARGET_TIME) < 0.05) {
+        targetDisplay.classList.add('match');
+      }
+    }
+
+    // hint
+    hintBox.classList.remove('success', 'warning');
+    if (!isFinite(t)) {
+      hintBox.classList.add('warning');
+      hintText.innerHTML = `⚠️ 小狗 ${state.speedDog} 不比哥哥 ${BRO_SPEED} 慢,追不上!`;
+    } else if (Math.abs(t - TARGET_TIME) < 0.05) {
+      hintBox.classList.add('success');
+      hintText.innerHTML = `🎯 太棒啦!正好 5 分钟追上!那么小狗每分钟就是跑 <strong>${state.speedDog}</strong> 米。<br>下面的「试错」按钮也可以验证一下~`;
+    } else if (t < TARGET_TIME) {
+      hintText.innerHTML = `太快追上了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让小狗 <strong>跑慢一点</strong>,会追得久一些~`;
+    } else {
+      hintText.innerHTML = `追得太久了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让小狗 <strong>跑快一点</strong>,差距小,追得快~`;
+    }
+  }
+
+  function updatePositions() {
+    runnerDog.style.left = metersToPx(state.posDog) + 'px';
+    runnerBro.style.left = metersToPx(state.posBro) + 'px';
+    timeEl.textContent = state.timeMin.toFixed(1);
+    gapEl.textContent = Math.round(Math.max(0, state.posDog - state.posBro));
+  }
+
+  function tick(timestamp) {
+    if (!state.running) return;
+    if (state.lastTimestamp === null) state.lastTimestamp = timestamp;
+    const dt = (timestamp - state.lastTimestamp) / 1000;
+    state.lastTimestamp = timestamp;
+    state.timeMin += dt;
+    state.posDog += state.speedDog * dt;
+    state.posBro += BRO_SPEED * dt;
+
+    if (state.posBro >= state.posDog) {
+      state.posBro = state.posDog;
+      state.running = false;
+      state.finished = true;
+      btnStart.textContent = '🔄 再试一次';
+      hintBox.classList.add('success');
+      hintText.innerHTML = `🎉 用了 <strong>${state.timeMin.toFixed(1)} 分钟</strong> 追上!目标是 5 分钟。`;
+    }
+    if (state.posDog > TRACK_LENGTH_METERS - 10) {
+      state.running = false;
+      state.finished = true;
+      btnStart.textContent = '🔄 再试一次';
+      if (state.posBro < state.posDog) {
+        hintBox.classList.add('warning');
+        hintText.innerHTML = `😢 小狗跑出跑道,还没追上。让小狗慢一点试试?`;
+      }
+    }
+
+    updatePositions();
+    if (state.running) requestAnimationFrame(tick);
+  }
+
+  function reset() {
+    state.timeMin = 0;
+    state.posDog = DOG_START;
+    state.posBro = 0;
+    state.running = false;
+    state.lastTimestamp = null;
+    state.finished = false;
+    btnStart.textContent = '▶️ 开始追';
+    updatePositions();
+    updatePrediction();
+  }
+
+  speedDogSlider.addEventListener('input', e => {
+    state.speedDog = parseInt(e.target.value);
+    speedDogVal.textContent = state.speedDog;
+    if (!state.running && !state.finished) updatePrediction();
+  });
+
+  btnStart.addEventListener('click', () => {
+    if (state.finished) { reset(); return; }
+    state.running = !state.running;
+    if (state.running) {
+      state.lastTimestamp = null;
+      btnStart.textContent = '⏸ 暂停';
+      requestAnimationFrame(tick);
+    } else { btnStart.textContent = '▶️ 继续'; }
+  });
+
+  btnReset.addEventListener('click', reset);
+
+  reset();
+  window.addEventListener('resize', updatePositions);
+})();
+
+// 揭示算法
+document.getElementById('btn-reveal').addEventListener('click', function() {
+  const sec = document.getElementById('reveal-section');
+  sec.classList.remove('hidden');
+  this.style.display = 'none';
+  sec.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+
+let correctCount = 0;
+function checkAnswer(num, correct) {
+  const input = document.getElementById('q' + num);
+  const fb = document.getElementById('fb' + num);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'quiz-feedback wrong';
+    fb.textContent = '先填一个数字哦~';
+    return;
+  }
+  if (Math.abs(val - correct) < 0.01) {
+    fb.className = 'quiz-feedback correct';
+    if (num === 1) {
+      fb.innerHTML = '🎉 答对啦!<br>速度差 = 240 ÷ 6 = 40 米/分钟<br>弟弟速度 = 90 − 40 = <strong>50 米/分钟</strong>';
+    } else {
+      fb.innerHTML = '🎉 答对啦!<br>速度差 = 120 − 80 = 40 米/分钟<br>距离差 = 40 × 4 = <strong>160 米</strong>';
+    }
+    if (!input.dataset.counted) {
+      correctCount++;
+      input.dataset.counted = '1';
+      checkComplete();
+    }
+  } else {
+    fb.className = 'quiz-feedback wrong';
+    if (num === 1) {
+      fb.innerHTML = '差一点点~先用「距离差 ÷ 时间」算速度差,然后再求弟弟速度。';
+    } else {
+      fb.innerHTML = '差一点点~这次给的是两个速度和时间。先算速度差,再用「速度差 × 时间 = 距离差」。';
+    }
+  }
+}
+function checkComplete() {
+  if (correctCount >= 2) {
+    localStorage.setItem('catch-up-lv3-done', '1');
+    document.getElementById('complete-card').style.display = 'block';
+    document.getElementById('complete-card').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+</script>
+</body>
+</html>
