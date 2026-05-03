@@ -249,16 +249,16 @@
   <!-- 卡片1:故事 -->
   <div class="card">
     <h2><span class="tip-emoji">📖</span>今天的故事</h2>
-    <p>哥哥放学回家路上看见小狗在前面 <strong>200 米</strong> 处跑。</p>
-    <p>哥哥每分钟能跑 <strong>100 米</strong>,他追了 <strong>5 分钟</strong> 追上了小狗。</p>
-    <p>问:小狗每分钟跑多少米?</p>
+    <p>Celine 放学回家路上,看见竹子在前面 <strong>200 米</strong> 的地方跑(他没等姐姐就先走啦)。</p>
+    <p>Celine 追过去,每分钟跑 <strong>100 米</strong>,追了 <strong>5 分钟</strong> 才追上。</p>
+    <p>问:竹子每分钟跑多少米?</p>
 
     <div class="known-box">
       <div class="label">📋 我们知道什么 / 要求什么:</div>
       <div class="known-item"><span class="check">✓</span> 距离差:200 米</div>
-      <div class="known-item"><span class="check">✓</span> 哥哥速度:100 米/分钟</div>
+      <div class="known-item"><span class="check">✓</span> Celine 速度:100 米/分钟</div>
       <div class="known-item"><span class="check">✓</span> 追上用了:5 分钟</div>
-      <div class="known-item"><span class="question">? 求:小狗每分钟跑多少米?</span></div>
+      <div class="known-item"><span class="question">? 求:竹子每分钟跑多少米?</span></div>
     </div>
 
     <div class="think-bubble">
@@ -272,11 +272,11 @@
   <!-- 卡片2:互动猜测 -->
   <div class="card">
     <h2><span class="tip-emoji">🎮</span>用试错法找答案</h2>
-    <p>下面拖滑块给小狗设个速度,看看哥哥要追多久。<br>
+    <p>下面拖滑块给竹子设个速度,看看 Celine 要追多久。<br>
     <strong>目标:让追上时间正好等于 5 分钟。</strong></p>
 
     <div class="target-display" id="target-display">
-      <div class="label">如果小狗这个速度,哥哥需要追:</div>
+      <div class="label">如果竹子这个速度,Celine 需要追:</div>
       <div class="value"><span id="catch-time">--</span></div>
     </div>
 
@@ -284,12 +284,12 @@
       <div class="track-wrap">
         <div class="track" id="track">
           <div class="runner" id="runner-dog">
-            <div class="runner-label">小狗</div>
-            <div class="runner-emoji">🐕</div>
+            <div class="runner-label">竹子</div>
+            <div class="runner-emoji">👦</div>
           </div>
           <div class="runner" id="runner-bro">
-            <div class="runner-emoji">🏃‍♂️</div>
-            <div class="runner-label">哥哥</div>
+            <div class="runner-emoji">🏃‍♀️</div>
+            <div class="runner-label">Celine</div>
           </div>
         </div>
       </div>
@@ -307,7 +307,7 @@
     </div>
 
     <div class="speed-control">
-      <label>🐕 小狗速度: <span class="value"><span id="speed-dog-val">80</span> 米/分钟</span></label>
+      <label>👦 竹子速度: <span class="value"><span id="speed-dog-val">80</span> 米/分钟</span></label>
       <input type="range" id="speed-dog" min="20" max="95" value="80" step="5">
     </div>
 
@@ -318,7 +318,7 @@
 
     <div class="hint" id="dynamic-hint">
       <span class="tip-emoji">💡</span>
-      <span id="hint-text">移动滑块改小狗速度,看预测的追上时间。试着让它正好是 5 分钟~</span>
+      <span id="hint-text">移动滑块改竹子速度,看预测的追上时间。试着让它正好是 5 分钟~</span>
     </div>
   </div>
 
@@ -342,8 +342,8 @@
     </div>
     <div class="step">
       <span class="step-num">3</span>
-      <strong>哥哥比小狗快 40,所以:</strong><br>
-      &nbsp;&nbsp;&nbsp;小狗速度 = 哥哥速度 − 速度差<br>
+      <strong>Celine 比竹子快 40,所以:</strong><br>
+      &nbsp;&nbsp;&nbsp;竹子速度 = Celine 速度 − 速度差<br>
       &nbsp;&nbsp;&nbsp;= 100 − 40 = <span style="color:#FF6B6B;font-weight:bold;">60 米/分钟</span>
     </div>
 
@@ -360,9 +360,9 @@
 
     <div class="quiz-card">
       <div class="quiz-question">
-        <strong>第 1 题:</strong>弟弟在哥哥前面 240 米。<br>
-        哥哥用 6 分钟追上了弟弟。哥哥每分钟跑 90 米。<br>
-        弟弟每分钟跑多少米?
+        <strong>第 1 题:</strong>🚴 小明骑车追小红。小红在前面 240 米跑步。<br>
+        小明用 6 分钟追上了小红。小明每分钟骑 90 米。<br>
+        小红每分钟跑多少米?
       </div>
       <div class="quiz-row">
         答:<input type="number" class="quiz-input" id="q1" inputmode="numeric"> 米/分钟
@@ -448,14 +448,14 @@
     hintBox.classList.remove('success', 'warning');
     if (!isFinite(t)) {
       hintBox.classList.add('warning');
-      hintText.innerHTML = `⚠️ 小狗 ${state.speedDog} 不比哥哥 ${BRO_SPEED} 慢,追不上!`;
+      hintText.innerHTML = `⚠️ 竹子 ${state.speedDog} 不比 Celine ${BRO_SPEED} 慢,追不上!`;
     } else if (Math.abs(t - TARGET_TIME) < 0.05) {
       hintBox.classList.add('success');
-      hintText.innerHTML = `🎯 太棒啦!正好 5 分钟追上!那么小狗每分钟就是跑 <strong>${state.speedDog}</strong> 米。<br>下面的「试错」按钮也可以验证一下~`;
+      hintText.innerHTML = `🎯 太棒啦!正好 5 分钟追上!那么竹子每分钟就是跑 <strong>${state.speedDog}</strong> 米。<br>下面的「试错」按钮也可以验证一下~`;
     } else if (t < TARGET_TIME) {
-      hintText.innerHTML = `太快追上了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让小狗 <strong>跑慢一点</strong>,会追得久一些~`;
+      hintText.innerHTML = `太快追上了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让竹子 <strong>跑慢一点</strong>,会追得久一些~`;
     } else {
-      hintText.innerHTML = `追得太久了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让小狗 <strong>跑快一点</strong>,差距小,追得快~`;
+      hintText.innerHTML = `追得太久了 (${t.toFixed(1)} 分钟,目标 5 分钟)。让竹子 <strong>跑快一点</strong>,差距小,追得快~`;
     }
   }
 
@@ -489,7 +489,7 @@
       btnStart.textContent = '🔄 再试一次';
       if (state.posBro < state.posDog) {
         hintBox.classList.add('warning');
-        hintText.innerHTML = `😢 小狗跑出跑道,还没追上。让小狗慢一点试试?`;
+        hintText.innerHTML = `😢 竹子跑出跑道,还没追上。让竹子慢一点试试?`;
       }
     }
 
@@ -552,7 +552,7 @@ function checkAnswer(num, correct) {
   if (Math.abs(val - correct) < 0.01) {
     fb.className = 'quiz-feedback correct';
     if (num === 1) {
-      fb.innerHTML = '🎉 答对啦!<br>速度差 = 240 ÷ 6 = 40 米/分钟<br>弟弟速度 = 90 − 40 = <strong>50 米/分钟</strong>';
+      fb.innerHTML = '🎉 答对啦!<br>速度差 = 240 ÷ 6 = 40 米/分钟<br>小红速度 = 90 − 40 = <strong>50 米/分钟</strong>';
     } else {
       fb.innerHTML = '🎉 答对啦!<br>速度差 = 120 − 80 = 40 米/分钟<br>距离差 = 40 × 4 = <strong>160 米</strong>';
     }
@@ -564,7 +564,7 @@ function checkAnswer(num, correct) {
   } else {
     fb.className = 'quiz-feedback wrong';
     if (num === 1) {
-      fb.innerHTML = '差一点点~先用「距离差 ÷ 时间」算速度差,然后再求弟弟速度。';
+      fb.innerHTML = '差一点点~先用「距离差 ÷ 时间」算速度差,然后再求小红速度。';
     } else {
       fb.innerHTML = '差一点点~这次给的是两个速度和时间。先算速度差,再用「速度差 × 时间 = 距离差」。';
     }

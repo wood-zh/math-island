@@ -260,14 +260,14 @@
   <!-- 卡片1:故事 -->
   <div class="card">
     <h2><span class="tip-emoji">📖</span>今天的故事</h2>
-    <p>妈妈 <strong>8:00</strong> 出门去买菜,每分钟走 <strong>60 米</strong>。</p>
-    <p><span class="delay-highlight">8:04</span> 哥哥发现妈妈忘带购物袋,赶紧跑去追,每分钟跑 <strong>90 米</strong>。</p>
-    <p>问:哥哥要追多久才能追上妈妈?</p>
+    <p><strong>8:00</strong> 竹子想去小卖部买零食 🍭 先跑出门啦,每分钟走 <strong>60 米</strong>。</p>
+    <p><span class="delay-highlight">8:04</span> Celine 发现竹子忘带钱包了,赶紧追出去送过去,每分钟跑 <strong>90 米</strong>。</p>
+    <p>问:Celine 要追多久才能追上竹子?</p>
 
     <div class="think-bubble">
       <span class="tip-emoji">🤔</span>
       <strong>这道题和 Lv1 不一样在哪里?</strong><br>
-      Lv1 里我们直接知道「距离差」是多少。这道题里只告诉我们 <strong>时间差(4 分钟)</strong>,没说哥哥出发时妈妈在哪!
+      Lv1 里我们直接知道「距离差」是多少。这道题里只告诉我们 <strong>时间差(4 分钟)</strong>,没说 Celine 出发时竹子在哪!
     </div>
   </div>
 
@@ -276,10 +276,10 @@
     <h2><span class="tip-emoji">🔑</span>解开难题的钥匙</h2>
     <div class="key-question">
       <div class="label">最关键的一个问题</div>
-      <div class="question">哥哥出发的那一刻,妈妈已经走出多远了?</div>
+      <div class="question">Celine 出发的那一刻,竹子已经走出多远了?</div>
     </div>
     <p>只要算出这个数,这题就变成 Lv1 那种有「距离差」的简单题啦~</p>
-    <p>👇 下面的动画里,我们先让妈妈一个人走 4 分钟,看看她到哪了:</p>
+    <p>👇 下面的动画里,我们先让竹子一个人走 4 分钟,看看他到哪了:</p>
   </div>
 
   <!-- 卡片3:互动 -->
@@ -288,7 +288,7 @@
 
     <div class="timeline-display">
       <div class="clock" id="clock">8:00</div>
-      <div class="narration" id="narration">妈妈准备出门啦~</div>
+      <div class="narration" id="narration">竹子准备出门啦~</div>
     </div>
 
     <div class="track-area">
@@ -297,23 +297,23 @@
           <div class="home-marker">🏠</div>
           <div class="lead-marker" id="lead-marker"></div>
           <div class="runner" id="runner-mom">
-            <div class="runner-label">妈妈</div>
-            <div class="runner-emoji">👩</div>
+            <div class="runner-label">竹子</div>
+            <div class="runner-emoji">👦</div>
           </div>
           <div class="runner at-home" id="runner-kid">
-            <div class="runner-emoji">👦</div>
-            <div class="runner-label">哥哥</div>
+            <div class="runner-emoji">🏃‍♀️</div>
+            <div class="runner-label">Celine</div>
           </div>
         </div>
       </div>
 
       <div class="info-row">
         <div class="info-item">
-          <div class="info-label">妈妈走了</div>
+          <div class="info-label">竹子走了</div>
           <div class="info-value"><span id="mom-dist">0</span> 米</div>
         </div>
         <div class="info-item">
-          <div class="info-label">哥哥走了</div>
+          <div class="info-label">Celine 走了</div>
           <div class="info-value"><span id="kid-dist">0</span> 米</div>
         </div>
         <div class="info-item">
@@ -324,11 +324,11 @@
     </div>
 
     <div class="speed-control">
-      <label>👩 妈妈速度: <span class="value"><span id="speed-mom-val">60</span> 米/分钟</span></label>
+      <label>👦 竹子速度: <span class="value"><span id="speed-mom-val">60</span> 米/分钟</span></label>
       <input type="range" id="speed-mom" min="20" max="120" value="60" step="10">
     </div>
     <div class="speed-control">
-      <label>👦 哥哥速度: <span class="value"><span id="speed-kid-val">90</span> 米/分钟</span></label>
+      <label>🏃‍♀️ Celine 速度: <span class="value"><span id="speed-kid-val">90</span> 米/分钟</span></label>
       <input type="range" id="speed-kid" min="20" max="200" value="90" step="10">
     </div>
     <div class="speed-control">
@@ -337,14 +337,14 @@
     </div>
 
     <div class="button-row">
-      <button class="btn-blue" id="btn-phase1">🏠 妈妈先走</button>
-      <button class="btn-primary" id="btn-phase2" disabled>🏃 哥哥追!</button>
+      <button class="btn-blue" id="btn-phase1">🏠 竹子先走</button>
+      <button class="btn-primary" id="btn-phase2" disabled>🏃 Celine 追!</button>
       <button class="btn-secondary" id="btn-reset">🔄 重新来</button>
     </div>
 
     <div class="hint" id="dynamic-hint">
       <span class="tip-emoji">💡</span>
-      <span id="hint-text">先按「妈妈先走」,看妈妈 4 分钟走了多远~</span>
+      <span id="hint-text">先按「竹子先走」,看竹子 4 分钟走了多远~</span>
     </div>
   </div>
 
@@ -355,7 +355,7 @@
 
     <div class="step highlight">
       <span class="step-num">1</span><strong>先算「距离差」</strong>:<br>
-      &nbsp;&nbsp;&nbsp;妈妈先走的时间 × 妈妈速度<br>
+      &nbsp;&nbsp;&nbsp;竹子先走的时间 × 竹子速度<br>
       &nbsp;&nbsp;&nbsp;= 4 × 60 = <span style="color:#FF6B6B;font-weight:bold;">240 米</span>
     </div>
     <div class="step">
@@ -391,9 +391,9 @@
 
     <div class="quiz-card">
       <div class="quiz-question">
-        <strong>第 2 题:</strong>爸爸先出发,每分钟骑 200 米。<br>
-        7 分钟后,妈妈也从家出发追,每分钟骑 250 米。<br>
-        妈妈要追多久才能追上爸爸?
+        <strong>第 2 题:</strong>🐶 小狗先跑出门,每分钟跑 200 米。<br>
+        7 分钟后,🐱 小猫也出门去追,每分钟跑 250 米。<br>
+        小猫要追多久才能追上小狗?
       </div>
       <div class="quiz-row">
         答:<input type="number" class="quiz-input" id="q2" inputmode="numeric"> 分钟
@@ -513,8 +513,8 @@
         btnPhase2.disabled = false;
         btnPhase1.disabled = true;
         const lead = state.posMom;
-        setNarration(`妈妈现在领先 ${Math.round(lead)} 米!`);
-        setHint(`<span class="tip-emoji">✨</span>看!妈妈一个人走了 ${state.delay} 分钟,领先了 <strong>${Math.round(lead)} 米</strong>。<br>这就是哥哥要追的「距离差」!现在按「哥哥追!」`, 'success');
+        setNarration(`竹子现在领先 ${Math.round(lead)} 米!`);
+        setHint(`<span class="tip-emoji">✨</span>看!竹子一个人走了 ${state.delay} 分钟,领先了 <strong>${Math.round(lead)} 米</strong>。<br>这就是 Celine 要追的「距离差」!现在按「Celine 追!」`, 'success');
       }
     } else if (state.phase === 2) {
       // Both moving
@@ -527,16 +527,16 @@
         state.phase = 3;
         state.running = false;
         const chaseTime = state.timeMin - state.delay;
-        setNarration(`追上啦!哥哥追了 ${chaseTime.toFixed(1)} 分钟。`);
-        setHint(`<span class="tip-emoji">🎉</span>哥哥用了 <strong>${chaseTime.toFixed(1)} 分钟</strong> 追上妈妈!`, 'success');
+        setNarration(`追上啦!Celine 追了 ${chaseTime.toFixed(1)} 分钟。`);
+        setHint(`<span class="tip-emoji">🎉</span>Celine 用了 <strong>${chaseTime.toFixed(1)} 分钟</strong> 追上竹子!`, 'success');
         btnPhase2.disabled = true;
       }
 
       if (state.posMom > TRACK_LENGTH_METERS - 20) {
         state.running = false;
         if (state.phase !== 3) {
-          setNarration('妈妈跑出跑道了~');
-          setHint('😢 没追上。把哥哥调更快试试?', 'warning');
+          setNarration('竹子跑出跑道了~');
+          setHint('😢 没追上。把 Celine 调更快试试?', 'warning');
         }
       }
     }
@@ -554,8 +554,8 @@
     state.lastTimestamp = null;
     btnPhase1.disabled = false;
     btnPhase2.disabled = true;
-    setNarration('妈妈准备出门啦~');
-    setHint(`先按「妈妈先走」,看妈妈 ${state.delay} 分钟走了多远~`, null);
+    setNarration('竹子准备出门啦~');
+    setHint(`先按「竹子先走」,看竹子 ${state.delay} 分钟走了多远~`, null);
     updateUI();
   }
 
@@ -579,8 +579,8 @@
     state.phase = 1;
     state.running = true;
     state.lastTimestamp = null;
-    setNarration('妈妈出门了…');
-    setHint(`妈妈每分钟走 ${state.speedMom} 米,看她 ${state.delay} 分钟能走多远?`);
+    setNarration('竹子出门了…');
+    setHint(`竹子每分钟走 ${state.speedMom} 米,看他 ${state.delay} 分钟能走多远?`);
     btnPhase1.disabled = true;
     requestAnimationFrame(tick);
   });
@@ -589,12 +589,12 @@
     state.phase = 2;
     state.running = true;
     state.lastTimestamp = null;
-    setNarration('哥哥追出门啦!');
+    setNarration('Celine 追出门啦!');
     const diff = state.speedKid - state.speedMom;
     if (diff <= 0) {
-      setHint(`⚠️ 哥哥 (${state.speedKid}) 没有妈妈快 (${state.speedMom}),追不上!`, 'warning');
+      setHint(`⚠️ Celine (${state.speedKid}) 没有竹子快 (${state.speedMom}),追不上!`, 'warning');
     } else {
-      setHint(`哥哥每分钟比妈妈快 ${diff} 米,所以每分钟追近 ${diff} 米~`);
+      setHint(`Celine 每分钟比竹子快 ${diff} 米,所以每分钟追近 ${diff} 米~`);
     }
     btnPhase2.disabled = true;
     requestAnimationFrame(tick);
@@ -633,7 +633,7 @@ function checkAnswer(num, correct) {
     if (num === 1) {
       fb.innerHTML = '差一点点~先想:小李出发时,小张已经走了多远?(用「时间差 × 小张速度」)';
     } else {
-      fb.innerHTML = '差一点点~先算:7 分钟里爸爸骑了多少米?然后再用 Lv1 的方法。';
+      fb.innerHTML = '差一点点~先算:7 分钟里小狗跑了多少米?然后再用 Lv1 的方法。';
     }
   }
 }
