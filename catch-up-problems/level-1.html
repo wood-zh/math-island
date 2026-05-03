@@ -296,6 +296,19 @@
   .quiz-feedback.correct { background: #D4EDDA; color: #155724; display: block; }
   .quiz-feedback.wrong { background: #FFE5E1; color: #B85C5C; display: block; }
 
+  .reflect-prompt {
+    background: #E8F4FF;
+    border-left: 4px solid #7AB8FF;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #2A5078;
+    line-height: 1.5;
+    display: none;
+  }
+  .reflect-prompt.show { display: block; }
+
   .complete-card {
     background: linear-gradient(135deg, #FFE5E1, #B5EAD7);
     border-radius: 16px;
@@ -315,6 +328,18 @@
     gap: 10px;
     margin-top: 14px;
   }
+  .create-invite {
+    background: rgba(255,255,255,0.55);
+    border: 2px dashed #FF8F73;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 14px 0 4px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #5D4954;
+    text-align: left;
+  }
+  .create-invite strong { color: #C44; }
 
   .tip-emoji { font-size: 20px; margin-right: 4px; }
   p { margin: 6px 0; }
@@ -441,6 +466,9 @@
         <button class="btn-secondary btn-small" onclick="checkAnswer(1, 2)">检查</button>
       </div>
       <div class="quiz-feedback" id="fb1"></div>
+      <div class="reflect-prompt" id="reflect1">
+        🤔 <strong>讲给爸爸听听:</strong>你怎么知道要先用 250 − 200?那个减出来的 50 代表什么?
+      </div>
     </div>
 
     <div class="quiz-card">
@@ -457,6 +485,9 @@
         <button class="btn-secondary btn-small" onclick="checkAnswer(2, 2)">检查</button>
       </div>
       <div class="quiz-feedback" id="fb2"></div>
+      <div class="reflect-prompt" id="reflect2">
+        🤔 <strong>讲给爸爸听听:</strong>这道题第一步算的是什么?为什么不能直接用 80 ÷ 100?
+      </div>
     </div>
   </div>
 
@@ -466,6 +497,12 @@
     <div class="title">第 1 关通过!</div>
     <p>你已经会了基本公式:<br>
     <strong>追上时间 = 距离差 ÷ 速度差</strong></p>
+
+    <div class="create-invite">
+      💡 <strong>挑战一下:</strong>用今天学的公式,自己编一道追及题考考爸爸~<br>
+      想好谁追谁、各自多快、相差多远,告诉爸爸题目和你的答案,看看爸爸算得对不对!
+    </div>
+
     <p style="font-size:14px;color:#777;">下一关:一前一后出发的情况怎么办?</p>
     <div class="nav-buttons">
       <a href="index.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">回目录</button></a>
@@ -576,6 +613,20 @@
 })();
 
 let correctCount = 0;
+const wrongCount = {};
+
+// 每题的递进 hints:第 1 次答错给 [0],第 2 次及以后给 [1](更具体)
+const HINTS = {
+  1: [
+    '先想一想:<strong>弟弟每分钟比哥哥快多少米?</strong>(用减法算速度差)',
+    '弟弟 250 − 哥哥 200 = <strong>50</strong>(每分钟能追近 50 米)。然后用 100 ÷ 50 ✨'
+  ],
+  2: [
+    '先想:<strong>小猫每分钟比小狗快多少米?</strong>',
+    '速度差 = 100 − 60 = <strong>40</strong>。然后 80 ÷ 40 = ? ✨'
+  ]
+};
+
 function checkAnswer(num, correct) {
   const input = document.getElementById('q' + num);
   const fb = document.getElementById('fb' + num);
@@ -592,18 +643,18 @@ function checkAnswer(num, correct) {
     } else {
       fb.innerHTML = '🎉 答对啦!速度差 = 100 − 60 = 40,时间 = 80 ÷ 40 = <strong>2 分钟</strong>。';
     }
+    document.getElementById('reflect' + num).classList.add('show');
     if (!input.dataset.counted) {
       correctCount++;
       input.dataset.counted = '1';
       checkComplete();
     }
   } else {
+    wrongCount[num] = (wrongCount[num] || 0) + 1;
+    const hints = HINTS[num];
+    const idx = Math.min(wrongCount[num] - 1, hints.length - 1);
     fb.className = 'quiz-feedback wrong';
-    if (num === 1) {
-      fb.innerHTML = '差一点点~先想:弟弟每分钟比哥哥快多少米?然后用 100 ÷ 速度差。';
-    } else {
-      fb.innerHTML = '差一点点~先想:小猫每分钟比小狗快多少米?然后用 80 ÷ 它。';
-    }
+    fb.innerHTML = '差一点点~ ' + hints[idx];
   }
 }
 function checkComplete() {

@@ -224,6 +224,31 @@
   .quiz-feedback.correct { background: #D4EDDA; color: #155724; display: block; }
   .quiz-feedback.wrong { background: #FFE5E1; color: #B85C5C; display: block; }
 
+  .reflect-prompt {
+    background: #E8F4FF;
+    border-left: 4px solid #7AB8FF;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #2A5078;
+    line-height: 1.5;
+    display: none;
+  }
+  .reflect-prompt.show { display: block; }
+
+  .bro-leads {
+    background: #FFF8E7;
+    border-left: 4px solid #FFB852;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 10px 0 8px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #6B4F2A;
+  }
+  .bro-leads strong { color: #C44; }
+
   .complete-card {
     background: linear-gradient(135deg, #FFE5E1, #B5EAD7);
     border-radius: 16px; padding: 22px;
@@ -237,6 +262,18 @@
   .complete-card .nav-buttons {
     display: flex; gap: 10px; margin-top: 14px;
   }
+  .create-invite {
+    background: rgba(255,255,255,0.55);
+    border: 2px dashed #FF8F73;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 14px 0 4px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #5D4954;
+    text-align: left;
+  }
+  .create-invite strong { color: #C44; }
 
   .tip-emoji { font-size: 20px; margin-right: 4px; }
   p { margin: 6px 0; }
@@ -387,9 +424,17 @@
         <button class="btn-secondary btn-small" onclick="checkAnswer(1, 5)">检查</button>
       </div>
       <div class="quiz-feedback" id="fb1"></div>
+      <div class="reflect-prompt" id="reflect1">
+        🤔 <strong>讲给爸爸听听:</strong>这道题第一步你算了什么?为什么不能直接用「8:00 到 8:?」的总时间来算?
+      </div>
     </div>
 
     <div class="quiz-card">
+      <div class="bro-leads">
+        💡 <strong>竹子先发话啦:</strong>Celine 还在读题,竹子已经拍手说——
+        「我知道!要先算 7 分钟里小狗跑了多远才行!」<br>
+        Celine 笑了:「弟弟这次反应好快~ 那你算算看,小猫要追多久?」
+      </div>
       <div class="quiz-question">
         <strong>第 2 题:</strong>🐶 小狗先跑出门,每分钟跑 200 米。<br>
         7 分钟后,🐱 小猫也出门去追,每分钟跑 250 米。<br>
@@ -400,6 +445,9 @@
         <button class="btn-secondary btn-small" onclick="checkAnswer(2, 28)">检查</button>
       </div>
       <div class="quiz-feedback" id="fb2"></div>
+      <div class="reflect-prompt" id="reflect2">
+        🤔 <strong>讲给爸爸听听:</strong>竹子说得对吗?如果不先算 7 分钟里小狗的距离,你会卡在哪一步?
+      </div>
     </div>
   </div>
 
@@ -408,6 +456,12 @@
     <div class="big-emoji">🎉</div>
     <div class="title">第 2 关通过!</div>
     <p>你学会了一个超重要的招数:<br><strong>把时间差变成距离差,就回到 Lv1!</strong></p>
+
+    <div class="create-invite">
+      💡 <strong>挑战一下:</strong>自己编一道「时间差追及」题考考爸爸~<br>
+      想好谁先出发、晚了多久、各自多快,告诉爸爸题目和答案,看爸爸算得对不对!
+    </div>
+
     <p style="font-size:14px;color:#777;">下一关:倒过来想——已知追上时间,反求速度。</p>
     <div class="nav-buttons">
       <a href="level-1.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">← LV 1</button></a>
@@ -607,6 +661,19 @@
 })();
 
 let correctCount = 0;
+const wrongCount = {};
+
+const HINTS = {
+  1: [
+    '先想:小李出发的时候,<strong>小张已经走了几分钟?走了多远?</strong>',
+    '时间差 = 3 分钟,所以小张已经走了 50 × 3 = <strong>150 米</strong>。这就是「距离差」。然后用 Lv1 的方法 ✨'
+  ],
+  2: [
+    '竹子说得对~先算:<strong>7 分钟里小狗跑了多少米?</strong>(这就是小猫要追的距离差)',
+    '距离差 = 200 × 7 = <strong>1400 米</strong>。速度差 = 250 − 200 = <strong>50</strong>。然后 1400 ÷ 50 ✨'
+  ]
+};
+
 function checkAnswer(num, correct) {
   const input = document.getElementById('q' + num);
   const fb = document.getElementById('fb' + num);
@@ -621,20 +688,20 @@ function checkAnswer(num, correct) {
     if (num === 1) {
       fb.innerHTML = '🎉 答对啦!<br>距离差 = 50 × 3 = 150 米<br>速度差 = 80 − 50 = 30 米/分钟<br>追上时间 = 150 ÷ 30 = <strong>5 分钟</strong>';
     } else {
-      fb.innerHTML = '🎉 答对啦!<br>距离差 = 200 × 7 = 1400 米<br>速度差 = 250 − 200 = 50 米/分钟<br>追上时间 = 1400 ÷ 50 = <strong>28 分钟</strong>';
+      fb.innerHTML = '🎉 答对啦!竹子那一步说对了~<br>距离差 = 200 × 7 = 1400 米<br>速度差 = 250 − 200 = 50 米/分钟<br>追上时间 = 1400 ÷ 50 = <strong>28 分钟</strong>';
     }
+    document.getElementById('reflect' + num).classList.add('show');
     if (!input.dataset.counted) {
       correctCount++;
       input.dataset.counted = '1';
       checkComplete();
     }
   } else {
+    wrongCount[num] = (wrongCount[num] || 0) + 1;
+    const hints = HINTS[num];
+    const idx = Math.min(wrongCount[num] - 1, hints.length - 1);
     fb.className = 'quiz-feedback wrong';
-    if (num === 1) {
-      fb.innerHTML = '差一点点~先想:小李出发时,小张已经走了多远?(用「时间差 × 小张速度」)';
-    } else {
-      fb.innerHTML = '差一点点~先算:7 分钟里小狗跑了多少米?然后再用 Lv1 的方法。';
-    }
+    fb.innerHTML = '差一点点~ ' + hints[idx];
   }
 }
 function checkComplete() {
