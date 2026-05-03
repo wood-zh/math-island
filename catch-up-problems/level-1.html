@@ -334,14 +334,14 @@
   <!-- 卡片1:故事 -->
   <div class="card">
     <h2><span class="tip-emoji">📖</span>今天的故事</h2>
-    <p>妹妹想去买冰淇淋,先跑出门啦 🍦 姐姐过了一会儿才追出来。</p>
+    <p>竹子想去买冰淇淋,先跑出门啦 🍦 Celine 过了一会儿才追出来。</p>
     <div class="role-card">
-      <div class="role-row"><span class="role-emoji">👧</span><div><strong>妹妹</strong>:每分钟 <strong>30 米</strong> · 已经在前面 <strong>60 米</strong></div></div>
-      <div class="role-row"><span class="role-emoji">🏃‍♀️</span><div><strong>姐姐</strong>:每分钟 <strong>50 米</strong> · 刚出发追</div></div>
+      <div class="role-row"><span class="role-emoji">👦</span><div><strong>竹子</strong>:每分钟 <strong>30 米</strong> · 已经在前面 <strong>60 米</strong></div></div>
+      <div class="role-row"><span class="role-emoji">🏃‍♀️</span><div><strong>Celine</strong>:每分钟 <strong>50 米</strong> · 刚出发追</div></div>
     </div>
     <div class="think-bubble">
       <span class="tip-emoji">🤔</span><strong>先想一想:</strong>
-      你猜姐姐多久能追上?在心里先想一个数。
+      你猜 Celine 多久能追上?在心里先想一个数。
     </div>
   </div>
 
@@ -354,12 +354,12 @@
       <div class="track-wrap">
         <div class="track" id="track">
           <div class="runner" id="runner-younger">
-            <div class="runner-label">妹妹</div>
-            <div class="runner-emoji">👧</div>
+            <div class="runner-label">竹子</div>
+            <div class="runner-emoji">👦</div>
           </div>
           <div class="runner" id="runner-older">
             <div class="runner-emoji">🏃‍♀️</div>
-            <div class="runner-label">姐姐</div>
+            <div class="runner-label">Celine</div>
           </div>
         </div>
       </div>
@@ -377,11 +377,11 @@
     </div>
 
     <div class="speed-control">
-      <label>👧 妹妹速度: <span class="value"><span id="speed-younger-val">30</span> 米/分钟</span></label>
+      <label>👦 竹子速度: <span class="value"><span id="speed-younger-val">30</span> 米/分钟</span></label>
       <input type="range" id="speed-younger" min="10" max="80" value="30" step="5">
     </div>
     <div class="speed-control">
-      <label>🏃‍♀️ 姐姐速度: <span class="value"><span id="speed-older-val">50</span> 米/分钟</span></label>
+      <label>🏃‍♀️ Celine 速度: <span class="value"><span id="speed-older-val">50</span> 米/分钟</span></label>
       <input type="range" id="speed-older" min="10" max="80" value="50" step="5">
     </div>
 
@@ -392,7 +392,7 @@
 
     <div class="hint" id="dynamic-hint">
       <span class="tip-emoji">💡</span>
-      <span id="hint-text">姐姐每分钟比妹妹快 <strong>20 米</strong>。每过 1 分钟,姐姐就能追近 20 米!</span>
+      <span id="hint-text">Celine 每分钟比竹子快 <strong>20 米</strong>。每过 1 分钟,Celine 就能追近 20 米!</span>
     </div>
   </div>
 
@@ -401,10 +401,10 @@
     <h2><span class="tip-emoji">✨</span>发现一个小秘密</h2>
     <div class="think-bubble">
       <span class="tip-emoji">💭</span><strong>回想一下:</strong>
-      刚才你把姐姐调更快,追上是变快了还是变慢了?<br>
-      关键是姐姐<strong>有多快</strong>,还是姐姐<strong>比妹妹快多少</strong>?
+      刚才你把 Celine 调更快,追上是变快了还是变慢了?<br>
+      关键是 Celine<strong>有多快</strong>,还是 Celine<strong>比竹子快多少</strong>?
     </div>
-    <div class="step"><span class="step-num">1</span>姐姐每分钟比妹妹快多少米,<strong>每分钟距离就缩短多少米</strong>。</div>
+    <div class="step"><span class="step-num">1</span>Celine 每分钟比竹子快多少米,<strong>每分钟距离就缩短多少米</strong>。</div>
     <div class="step"><span class="step-num">2</span>这个「快多少」叫做 <strong>速度差</strong>。</div>
     <div class="step"><span class="step-num">3</span>用「距离差」除以「速度差」,就是要追多久!</div>
 
@@ -512,9 +512,9 @@
     hintBox.classList.remove('success', 'warning');
     if (diff <= 0) {
       hintBox.classList.add('warning');
-      hintText.innerHTML = `⚠️ 姐姐 (${state.speedOlder}) 没有妹妹 (${state.speedYounger}) 快,追不上!把姐姐调快试试~`;
+      hintText.innerHTML = `⚠️ Celine (${state.speedOlder}) 没有竹子 (${state.speedYounger}) 快,追不上!把 Celine 调快试试~`;
     } else {
-      hintText.innerHTML = `姐姐每分钟比妹妹快 <strong>${diff} 米</strong>。每过 1 分钟,姐姐就能追近 ${diff} 米!`;
+      hintText.innerHTML = `Celine 每分钟比竹子快 <strong>${diff} 米</strong>。每过 1 分钟,Celine 就能追近 ${diff} 米!`;
     }
   }
   function tick(timestamp) {
@@ -538,7 +538,7 @@
       btnStart.textContent = '🔄 再来一次';
       if (!state.caught) {
         hintBox.classList.add('warning');
-        hintText.innerHTML = `😢 妹妹跑出跑道了,没追上。把姐姐调更快试试?`;
+        hintText.innerHTML = `😢 竹子跑出跑道了,没追上。把 Celine 调更快试试?`;
       }
     }
     updatePositions();
