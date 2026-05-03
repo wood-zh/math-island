@@ -241,6 +241,31 @@
     vertical-align: -2px;
   }
 
+  .role-card {
+    background: #FAFAFA;
+    border-radius: 10px;
+    padding: 4px 14px;
+    margin: 10px 0;
+    border: 1px solid #EEE;
+  }
+  .role-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .role-row + .role-row {
+    border-top: 1px dashed #EEE;
+  }
+  .role-emoji {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 32px;
+    text-align: center;
+  }
+
   .quiz-card {
     background: #F4FAFF;
     border-radius: 12px;
@@ -309,13 +334,14 @@
   <!-- 卡片1:故事 -->
   <div class="card">
     <h2><span class="tip-emoji">📖</span>今天的故事</h2>
-    <p>妹妹想去店里买冰淇淋,先出门啦。<br>
-    妹妹走得慢,<strong>每分钟走 30 米</strong>。</p>
-    <p>过了一会儿姐姐才追出门,这时妹妹已经在前面 <strong>60 米</strong> 的地方了。</p>
-    <p>姐姐跑得快,<strong>每分钟能跑 50 米</strong>。</p>
+    <p>妹妹想去买冰淇淋,先跑出门啦 🍦 姐姐过了一会儿才追出来。</p>
+    <div class="role-card">
+      <div class="role-row"><span class="role-emoji">👧</span><div><strong>妹妹</strong>:每分钟 <strong>30 米</strong> · 已经在前面 <strong>60 米</strong></div></div>
+      <div class="role-row"><span class="role-emoji">🏃‍♀️</span><div><strong>姐姐</strong>:每分钟 <strong>50 米</strong> · 刚出发追</div></div>
+    </div>
     <div class="think-bubble">
       <span class="tip-emoji">🤔</span><strong>先想一想:</strong>
-      你猜姐姐多久能追上妹妹?在心里先想一个数。
+      你猜姐姐多久能追上?在心里先想一个数。
     </div>
   </div>
 
@@ -373,6 +399,11 @@
   <!-- 卡片3:发现规律 -->
   <div class="card">
     <h2><span class="tip-emoji">✨</span>发现一个小秘密</h2>
+    <div class="think-bubble">
+      <span class="tip-emoji">💭</span><strong>回想一下:</strong>
+      刚才你把姐姐调更快,追上是变快了还是变慢了?<br>
+      关键是姐姐<strong>有多快</strong>,还是姐姐<strong>比妹妹快多少</strong>?
+    </div>
     <div class="step"><span class="step-num">1</span>姐姐每分钟比妹妹快多少米,<strong>每分钟距离就缩短多少米</strong>。</div>
     <div class="step"><span class="step-num">2</span>这个「快多少」叫做 <strong>速度差</strong>。</div>
     <div class="step"><span class="step-num">3</span>用「距离差」除以「速度差」,就是要追多久!</div>
@@ -398,9 +429,12 @@
 
     <div class="quiz-card">
       <div class="quiz-question">
-        <strong>第 1 题:</strong>哥哥骑自行车,每分钟 200 米。<br>
-        弟弟跑步追,每分钟 250 米。哥哥在弟弟前面 100 米。<br>
-        弟弟要追多久才能追上哥哥?
+        <strong>第 1 题:</strong>哥哥骑车出门,弟弟在后面追 🚴
+        <div class="role-card">
+          <div class="role-row"><span class="role-emoji">🚴</span><div><strong>哥哥</strong>:每分钟 <strong>200 米</strong> · 在前面 <strong>100 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">🏃</span><div><strong>弟弟</strong>:每分钟 <strong>250 米</strong></div></div>
+        </div>
+        弟弟多久能追上?
       </div>
       <div class="quiz-row">
         答:<input type="number" class="quiz-input" id="q1" inputmode="numeric"> 分钟
@@ -411,9 +445,12 @@
 
     <div class="quiz-card">
       <div class="quiz-question">
-        <strong>第 2 题:</strong>小狗和小猫赛跑。<br>
-        小狗在前面 80 米,每分钟 60 米。小猫每分钟跑 100 米。<br>
-        小猫多久能追上小狗?
+        <strong>第 2 题:</strong>小狗小猫赛跑,小猫追小狗 🐱
+        <div class="role-card">
+          <div class="role-row"><span class="role-emoji">🐶</span><div><strong>小狗</strong>:每分钟 <strong>60 米</strong> · 在前面 <strong>80 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">🐱</span><div><strong>小猫</strong>:每分钟 <strong>100 米</strong></div></div>
+        </div>
+        小猫多久能追上?
       </div>
       <div class="quiz-row">
         答:<input type="number" class="quiz-input" id="q2" inputmode="numeric"> 分钟
