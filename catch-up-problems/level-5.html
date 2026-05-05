@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lv5 · 环形跑道</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #FFF5E1 0%, #FFE5E1 100%);
+    color: #5D4954;
+    margin: 0; padding: 16px;
+    line-height: 1.7; font-size: 18px;
+    min-height: 100vh;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .back-link { color: #FF6B6B; text-decoration: none; font-size: 15px; font-weight: 600; }
+  .lv-badge {
+    background: linear-gradient(135deg, #FFB7B2, #FF6B6B);
+    color: white; padding: 4px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+  }
+
+  h1 { color: #FF6B6B; font-size: 26px; text-align: center; margin: 8px 0 6px; }
+  .subtitle { text-align: center; color: #B89B9B; margin-bottom: 18px; font-size: 14px; }
+
+  .card {
+    background: white; border-radius: 18px; padding: 20px;
+    margin-bottom: 14px; box-shadow: 0 4px 14px rgba(255,154,162,0.15);
+  }
+  .card h2 { color: #FF8F73; font-size: 20px; margin: 0 0 12px; }
+
+  .think-bubble {
+    background: #FFF8E7; border-left: 4px solid #FFB7B2;
+    padding: 12px 14px; border-radius: 10px; margin: 10px 0; font-size: 16px;
+  }
+
+  .key-question {
+    background: linear-gradient(135deg, #E8F4FF, #DFF0FF);
+    border-radius: 14px; padding: 16px; margin: 12px 0;
+    border: 2px solid #7AB8FF;
+  }
+  .key-question .label {
+    color: #2070C8; font-weight: bold; font-size: 14px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .key-question .question {
+    font-size: 17px; margin-top: 6px; color: #5D4954;
+  }
+
+  .timeline-display {
+    background: #FFF8E7; border-radius: 12px;
+    padding: 14px 16px; margin: 12px 0; text-align: center;
+  }
+  .timeline-display .clock {
+    font-size: 28px; font-weight: bold;
+    color: #FF6B6B;
+    font-family: "SF Mono", Monaco, monospace;
+  }
+  .timeline-display .narration {
+    color: #555; font-size: 15px; margin-top: 6px;
+    min-height: 22px;
+  }
+
+  /* === 圆形跑道 === */
+  .circle-track-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 8px;
+  }
+  .circle-track {
+    position: relative;
+    width: 240px; height: 240px;
+    border: 4px dashed #C8B6FF;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, #FFF5E1 0%, #FAFAFA 70%);
+    box-shadow: 0 4px 14px rgba(200,182,255,0.2);
+  }
+  .start-flag {
+    position: absolute;
+    top: -16px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    z-index: 2;
+  }
+  .start-flag::after {
+    content: '起点';
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #888;
+    background: white;
+    padding: 1px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .circle-runner {
+    position: absolute;
+    width: 40px; height: 40px;
+    margin: -20px 0 0 -20px;
+    font-size: 28px;
+    text-align: center;
+    line-height: 40px;
+    pointer-events: none;
+    z-index: 3;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    transition: left 0.05s linear, top 0.05s linear;
+  }
+  .lap-info {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .lap-info .label { font-size: 11px; color: #888; margin-bottom: 2px; }
+  .lap-info .value {
+    font-size: 22px; color: #FF6B6B; font-weight: bold;
+    font-family: "SF Mono", Monaco, monospace;
+  }
+  .lap-info .small { font-size: 11px; color: #999; }
+
+  .circle-runner.caught {
+    animation: caught-flash 0.6s ease-out 3;
+  }
+  @keyframes caught-flash {
+    0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+    50% { filter: drop-shadow(0 0 12px #4CC76C); }
+  }
+
+  .info-row {
+    display: flex; justify-content: space-around;
+    background: #FFF0E5; border-radius: 12px;
+    padding: 10px; margin: 12px 0 4px; gap: 6px;
+  }
+  .info-item { text-align: center; flex: 1; min-width: 0; }
+  .info-label { font-size: 12px; color: #A88; }
+  .info-value { font-size: 17px; font-weight: bold; color: #FF6B6B; margin-top: 2px; }
+  .info-item.diff .info-value { color: #2070C8; }
+  .info-item.diff.match .info-value {
+    color: #2A6B5E;
+    background: #DFF7E5;
+    border-radius: 6px;
+    padding: 1px 6px;
+  }
+
+  .button-row { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+  button {
+    flex: 1; min-width: 130px; padding: 13px 10px;
+    border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: transform 0.1s;
+  }
+  button:active { transform: scale(0.96); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #FF6B6B; color: white; }
+  .btn-secondary { background: #B5EAD7; color: #2A6B5E; }
+  .btn-blue { background: #7AB8FF; color: white; }
+  .btn-small { flex: 0 0 auto; padding: 8px 14px; font-size: 14px; min-width: auto; }
+
+  .hint {
+    background: #E8F4FF; border-radius: 10px;
+    padding: 12px 14px; margin: 10px 0;
+    border-left: 4px solid #7AB8FF; font-size: 15px;
+  }
+  .hint.success { background: #DFF7E5; border-left-color: #4CC76C; }
+
+  .formula-box {
+    background: linear-gradient(135deg, #FFF8E7 0%, #FFE5E1 100%);
+    border-radius: 14px; padding: 16px;
+    text-align: center; margin: 14px 0;
+    border: 2px dashed #FFB7B2;
+  }
+  .formula { font-size: 20px; font-weight: bold; color: #FF6B6B; margin: 8px 0; }
+  .formula-note { font-size: 12px; color: #888; }
+
+  .step {
+    background: #FAFAFA; border-radius: 10px;
+    padding: 12px 14px; margin: 8px 0;
+    border-left: 4px solid #B5EAD7; font-size: 15px;
+  }
+  .step-num {
+    background: #B5EAD7; color: #2A6B5E;
+    border-radius: 50%; width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: bold; margin-right: 6px; font-size: 13px; vertical-align: -2px;
+  }
+
+  .role-card {
+    background: #FAFAFA; border-radius: 10px;
+    padding: 4px 14px; margin: 10px 0;
+    border: 1px solid #EEE;
+  }
+  .role-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; font-size: 16px; line-height: 1.4;
+  }
+  .role-row + .role-row { border-top: 1px dashed #EEE; }
+  .role-emoji {
+    font-size: 24px; flex-shrink: 0;
+    width: 32px; text-align: center;
+  }
+
+  .quiz-card {
+    background: #F4FAFF; border-radius: 12px;
+    padding: 14px 16px; margin: 12px 0;
+  }
+  .quiz-question { font-size: 15px; margin-bottom: 10px; line-height: 1.6; }
+  .quiz-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .quiz-input {
+    width: 80px; padding: 8px 10px;
+    border: 2px solid #DDD; border-radius: 8px;
+    font-size: 17px; text-align: center; font-family: inherit;
+  }
+  .quiz-input:focus { outline: none; border-color: #FF6B6B; }
+  .quiz-feedback {
+    margin-top: 10px; padding: 10px 12px;
+    border-radius: 8px; display: none;
+    font-weight: 600; font-size: 14px; line-height: 1.6;
+  }
+  .quiz-feedback.correct { background: #D4EDDA; color: #155724; display: block; }
+  .quiz-feedback.wrong { background: #FFE5E1; color: #B85C5C; display: block; }
+
+  .reflect-prompt {
+    background: #E8F4FF; border-left: 4px solid #7AB8FF;
+    border-radius: 10px; padding: 10px 14px;
+    margin-top: 8px; font-size: 14px;
+    color: #2A5078; line-height: 1.5;
+    display: none;
+  }
+  .reflect-prompt.show { display: block; }
+
+  .complete-card {
+    background: linear-gradient(135deg, #FFE5E1, #B5EAD7);
+    border-radius: 16px; padding: 22px;
+    text-align: center; margin: 18px 0;
+  }
+  .complete-card .big-emoji { font-size: 48px; }
+  .complete-card .title {
+    font-size: 22px; font-weight: bold;
+    color: #5D4954; margin: 10px 0;
+  }
+  .complete-card .nav-buttons {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+  .create-invite {
+    background: rgba(255,255,255,0.55);
+    border: 2px dashed #FF8F73;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 14px 0 4px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #5D4954;
+    text-align: left;
+  }
+  .create-invite strong { color: #C44; }
+
+  .tip-emoji { font-size: 20px; margin-right: 4px; }
+  p { margin: 6px 0; }
+  strong { color: #C44; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="nav-bar">
+    <a href="index.html" class="back-link">← 回到目录</a>
+    <span class="lv-badge">LV 5</span>
+  </div>
+
+  <h1>环形跑道</h1>
+  <p class="subtitle">圆圈上的追逐 · 大师关</p>
+
+  <!-- 1. 故事卡片 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📖</span>今天的故事</h2>
+    <p>小区花园有一条 <strong>环形步道</strong>,绕一圈正好 <strong>200 米</strong> 🌳</p>
+    <p>Celine 和竹子站在<strong>同一个起点</strong>,<strong>同时</strong>朝<strong>同一个方向</strong>跑。</p>
+    <div class="role-card">
+      <div class="role-row"><span class="role-emoji">🏃‍♀️</span><div><strong>Celine</strong>:每分钟 <strong>100 米</strong></div></div>
+      <div class="role-row"><span class="role-emoji">👦</span><div><strong>竹子</strong>:每分钟 <strong>60 米</strong></div></div>
+    </div>
+    <p>问:<strong>Celine 第一次追上竹子,要跑几分钟?</strong></p>
+
+    <div class="think-bubble">
+      <span class="tip-emoji">🤔</span><strong>先想一想:</strong>
+      跑道是圆的——什么时候算 Celine "追上"竹子?<br>
+      她俩一起出发、Celine 比竹子快,<strong>第一秒她就在竹子前面了呀?</strong>
+    </div>
+  </div>
+
+  <!-- 2. 关键问题 -->
+  <div class="card">
+    <h2><span class="tip-emoji">🔑</span>"追上"在圆上是什么意思?</h2>
+    <div class="key-question">
+      <div class="label">最关键的洞察</div>
+      <div class="question">在直跑道上,"追上" = 跑到同一位置。<br>但在圆上,只有<strong>多跑整整一圈</strong>,Celine 才能从竹子背后追上!</div>
+    </div>
+    <p>👇 下面动画看清楚:Celine 一圈一圈拉近,直到从竹子后面追上 ✨</p>
+  </div>
+
+  <!-- 3. 互动:圆形跑道 -->
+  <div class="card">
+    <h2><span class="tip-emoji">🎮</span>看 Celine 怎么"追一圈"</h2>
+
+    <div class="timeline-display">
+      <div class="clock">⏱️ <span id="time">0.0</span> 分</div>
+      <div class="narration" id="narration">两人在起点,准备出发~</div>
+    </div>
+
+    <div class="circle-track-wrap">
+      <div class="circle-track" id="circle-track">
+        <div class="start-flag">🚩</div>
+        <div class="lap-info">
+          <div class="label">差距</div>
+          <div class="value"><span id="diff">0</span></div>
+          <div class="small">米 / 一圈 200</div>
+        </div>
+        <div class="circle-runner" id="runner-bro">👦</div>
+        <div class="circle-runner" id="runner-cele">🏃‍♀️</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-item">
+        <div class="info-label">Celine 跑了</div>
+        <div class="info-value"><span id="cele-dist">0</span> 米</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">竹子跑了</div>
+        <div class="info-value"><span id="bro-dist">0</span> 米</div>
+      </div>
+      <div class="info-item diff" id="diff-item">
+        <div class="info-label">差距</div>
+        <div class="info-value"><span id="diff-2">0</span> 米</div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="btn-primary" id="btn-start">▶️ 一起跑</button>
+      <button class="btn-secondary" id="btn-reset">🔄 重新看</button>
+    </div>
+
+    <div class="hint" id="dynamic-hint">
+      <span class="tip-emoji">💡</span>
+      <span id="hint-text">注意看「差距」这个数字——什么时候它变成 200(一圈)?</span>
+    </div>
+  </div>
+
+  <!-- 4. 解题步骤 -->
+  <div class="card">
+    <h2><span class="tip-emoji">✏️</span>怎么算?</h2>
+    <div class="step">
+      <span class="step-num">1</span>
+      <strong>速度差</strong> = 100 − 60 = <span style="color:#FF6B6B;font-weight:bold;">40 米/分</span><br>
+      &nbsp;&nbsp;Celine 每分钟比竹子多跑 40 米。
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <strong>需要多跑多少米?</strong> 答:整整一圈 = <span style="color:#FF6B6B;font-weight:bold;">200 米</span><br>
+      &nbsp;&nbsp;这就是环形跑道里的"距离差"!
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <strong>追上时间</strong> = 200 ÷ 40 = <span style="color:#FF6B6B;font-weight:bold;font-size:18px;">5 分钟</span>
+    </div>
+
+    <div class="formula-box">
+      <div>这关的新公式(其实是老朋友!):</div>
+      <div class="formula">追上时间 = 周长 ÷ 速度差</div>
+      <div class="formula-note">(还是 Lv1 那个公式,只是「距离差」变成了「一圈周长」)</div>
+    </div>
+  </div>
+
+  <!-- 5. 变式题 -->
+  <div class="card">
+    <h2><span class="tip-emoji">📝</span>你来试试看(2 道)</h2>
+
+    <!-- Q1: 不同周长,不同速度 -->
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 1 题:</strong>🐱🐶 操场跑步赛
+        <div class="role-card">
+          <div class="role-row"><span class="role-emoji">🏟️</span><div>操场一圈 <strong>300 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">🐶</span><div><strong>小狗</strong>:每分钟 <strong>80 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">🐱</span><div><strong>小猫</strong>:每分钟 <strong>50 米</strong></div></div>
+        </div>
+        两个一起从起点出发,同方向跑。<strong>小狗第一次追上小猫,要几分钟?</strong>
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q1" inputmode="numeric"> 分钟
+        <button class="btn-secondary btn-small" onclick="checkAnswer(1, 10)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+      <div class="reflect-prompt" id="reflect1">
+        🤔 <strong>讲给爸爸听听:</strong>这道题"距离差"是多少米?为什么不是 0?
+      </div>
+    </div>
+
+    <!-- Q2: 反求(综合 Lv3 思路 + Lv5 概念) -->
+    <div class="quiz-card">
+      <div class="quiz-question">
+        <strong>第 2 题:</strong>🚶 反过来求速度
+        <div class="role-card">
+          <div class="role-row"><span class="role-emoji">🏟️</span><div>跑道一圈 <strong>200 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">🏃</span><div><strong>小明</strong>:每分钟 <strong>90 米</strong></div></div>
+          <div class="role-row"><span class="role-emoji">⏱️</span><div>用了 <strong>5 分钟</strong> 第一次追上小华</div></div>
+        </div>
+        小华每分钟跑多少米?
+      </div>
+      <div class="quiz-row">
+        答:<input type="number" class="quiz-input" id="q2" inputmode="numeric"> 米/分钟
+        <button class="btn-secondary btn-small" onclick="checkAnswer(2, 50)">检查</button>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+      <div class="reflect-prompt" id="reflect2">
+        🤔 <strong>讲给爸爸听听:</strong>这次反过来了——你怎么从「5 分钟追上」+「一圈 200 米」反推出速度差的?
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 完成 -->
+  <div class="complete-card" id="complete-card" style="display:none;">
+    <div class="big-emoji">🎉</div>
+    <div class="title">第 5 关通过!追及岛全部通关 🏝️</div>
+    <p>你解开了一个超神奇的事情:<br><strong>同一个公式,直跑道、圆跑道都能用!</strong></p>
+    <p style="font-size:14px;">在圆上,「距离差」就是<strong>一圈周长</strong> —— Celine 多跑一整圈才追上。</p>
+
+    <div class="create-invite">
+      💡 <strong>挑战一下:</strong>自己编一道环形跑道追及题考爸爸~<br>
+      可以是不同周长、不同速度,甚至反过来求(已知时间反求速度)。告诉爸爸题目和答案,看他算对吗?
+    </div>
+
+    <p style="font-size:14px;color:#777;">追及岛的 5 关你都通了!之后想挑战什么主题,告诉爸爸~</p>
+    <div class="nav-buttons">
+      <a href="level-4.html" style="flex:1;text-decoration:none;"><button class="btn-secondary">← LV 4</button></a>
+      <a href="../index.html" style="flex:1;text-decoration:none;"><button class="btn-primary">回数学冒险岛</button></a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const PERIMETER = 200;        // 一圈周长(米)
+  const SPEED_CELE = 100;       // Celine 速度(米/分)
+  const SPEED_BRO = 60;         // 竹子速度(米/分)
+  const SIM_RATE = 0.5;         // 1 真实秒 = 0.5 模拟分钟(让动画慢一点看清楚)
+  const RADIUS_PX = 110;        // 跑道半径(像素)
+  const CX = 120, CY = 120;     // 圆心(对应 240px 容器)
+
+  const state = {
+    timeMin: 0,
+    posCele: 0, posBro: 0,
+    running: false, lastTimestamp: null,
+    caught: false, finished: false,
+  };
+
+  const runnerCele = document.getElementById('runner-cele');
+  const runnerBro = document.getElementById('runner-bro');
+  const timeEl = document.getElementById('time');
+  const diffEl = document.getElementById('diff');
+  const diff2El = document.getElementById('diff-2');
+  const diffItem = document.getElementById('diff-item');
+  const celeDistEl = document.getElementById('cele-dist');
+  const broDistEl = document.getElementById('bro-dist');
+  const narrationEl = document.getElementById('narration');
+  const hintBox = document.getElementById('dynamic-hint');
+  const hintText = document.getElementById('hint-text');
+  const btnStart = document.getElementById('btn-start');
+  const btnReset = document.getElementById('btn-reset');
+
+  function setCirclePos(el, distanceMeters) {
+    // 起点在圆顶部(-π/2),顺时针为正方向
+    const fraction = (distanceMeters % PERIMETER) / PERIMETER;
+    const angle = fraction * 2 * Math.PI - Math.PI / 2;
+    el.style.left = (CX + RADIUS_PX * Math.cos(angle)) + 'px';
+    el.style.top = (CY + RADIUS_PX * Math.sin(angle)) + 'px';
+  }
+
+  function updateUI() {
+    setCirclePos(runnerCele, state.posCele);
+    setCirclePos(runnerBro, state.posBro);
+    timeEl.textContent = state.timeMin.toFixed(1);
+    celeDistEl.textContent = Math.round(state.posCele);
+    broDistEl.textContent = Math.round(state.posBro);
+    const diff = state.posCele - state.posBro;
+    diffEl.textContent = Math.round(diff);
+    diff2El.textContent = Math.round(diff);
+    if (diff >= PERIMETER - 1) {
+      diffItem.classList.add('match');
+    } else {
+      diffItem.classList.remove('match');
+    }
+  }
+
+  function setNarration(t) { narrationEl.textContent = t; }
+  function setHint(html, type) {
+    hintBox.classList.remove('success');
+    if (type) hintBox.classList.add(type);
+    hintText.innerHTML = html;
+  }
+
+  function tick(ts) {
+    if (!state.running) return;
+    if (state.lastTimestamp === null) state.lastTimestamp = ts;
+    const dt = (ts - state.lastTimestamp) / 1000;
+    state.lastTimestamp = ts;
+    const simStep = dt * SIM_RATE;
+    state.timeMin += simStep;
+    state.posCele += SPEED_CELE * simStep;
+    state.posBro += SPEED_BRO * simStep;
+
+    const diff = state.posCele - state.posBro;
+    if (diff >= PERIMETER && !state.caught) {
+      // 锁定到刚好一圈
+      state.timeMin = PERIMETER / (SPEED_CELE - SPEED_BRO);
+      state.posCele = state.posBro + PERIMETER;
+      // 对齐 mod
+      state.posCele = SPEED_CELE * state.timeMin;
+      state.posBro = SPEED_BRO * state.timeMin;
+      state.caught = true;
+      state.running = false;
+      state.finished = true;
+      runnerCele.classList.add('caught');
+      setNarration(`🎉 追上啦!Celine 多跑了整整一圈!`);
+      setHint(`🎉 用了 <strong>${state.timeMin.toFixed(1)} 分钟</strong>!Celine 跑了 ${Math.round(state.posCele)} 米(${(state.posCele/PERIMETER).toFixed(1)} 圈),竹子跑了 ${Math.round(state.posBro)} 米(${(state.posBro/PERIMETER).toFixed(1)} 圈)。Celine 整整<strong>多跑了一圈</strong>,从竹子背后追上!`, 'success');
+      btnStart.textContent = '🔄 再看一次';
+    }
+
+    // 中段引导
+    if (state.running) {
+      if (diff >= 80 && diff < 100 && !runnerCele.dataset.midHint) {
+        setHint(`差距 = ${Math.round(diff)} 米。Celine 在拼命拉近——每分钟拉近 40 米。看着差距数字什么时候到 200~`);
+        runnerCele.dataset.midHint = '1';
+      }
+    }
+
+    updateUI();
+    if (state.running) requestAnimationFrame(tick);
+  }
+
+  function reset() {
+    state.timeMin = 0;
+    state.posCele = 0; state.posBro = 0;
+    state.running = false; state.lastTimestamp = null;
+    state.caught = false; state.finished = false;
+    runnerCele.classList.remove('caught');
+    delete runnerCele.dataset.midHint;
+    btnStart.textContent = '▶️ 一起跑';
+    setNarration('两人在起点,准备出发~');
+    setHint('注意看「差距」这个数字——什么时候它变成 200(一圈)?', null);
+    updateUI();
+  }
+
+  btnStart.addEventListener('click', () => {
+    if (state.finished) { reset(); return; }
+    state.running = !state.running;
+    if (state.running) {
+      state.lastTimestamp = null;
+      btnStart.textContent = '⏸ 暂停';
+      setNarration('一起跑啊跑…');
+      requestAnimationFrame(tick);
+    } else {
+      btnStart.textContent = '▶️ 继续';
+    }
+  });
+  btnReset.addEventListener('click', reset);
+
+  reset();
+})();
+
+let correctCount = 0;
+const wrongCount = {};
+
+const HINTS = {
+  1: [
+    '在圆上,"追上" 不是同一位置——是<strong>多跑一圈</strong>。所以"距离差" = <strong>300 米</strong>(一圈)~',
+    '速度差 = 80 − 50 = <strong>30 米/分</strong>。距离差 = 一圈 = <strong>300 米</strong>。然后 300 ÷ 30 ✨'
+  ],
+  2: [
+    '反过来想:5 分钟里小明<strong>多跑了一整圈(200 米)</strong>。那每分钟多跑多少米?',
+    '速度差 = 200 ÷ 5 = <strong>40 米/分</strong>。小明 90,比小华快 40,所以小华 = 90 − 40 ✨'
+  ]
+};
+
+function checkAnswer(num, correct) {
+  const input = document.getElementById('q' + num);
+  const fb = document.getElementById('fb' + num);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) {
+    fb.className = 'quiz-feedback wrong';
+    fb.textContent = '先填一个数字哦~';
+    return;
+  }
+  if (Math.abs(val - correct) < 0.01) {
+    fb.className = 'quiz-feedback correct';
+    if (num === 1) {
+      fb.innerHTML = '🎉 答对啦!<br>速度差 = 80 − 50 = 30 米/分<br>距离差 = 一圈 = 300 米<br>追上时间 = 300 ÷ 30 = <strong>10 分钟</strong>';
+    } else {
+      fb.innerHTML = '🎉 答对啦!<br>5 分钟里小明多跑一整圈 200 米<br>速度差 = 200 ÷ 5 = 40 米/分<br>小华 = 90 − 40 = <strong>50 米/分</strong>';
+    }
+    document.getElementById('reflect' + num).classList.add('show');
+    if (!input.dataset.counted) {
+      correctCount++;
+      input.dataset.counted = '1';
+      checkComplete();
+    }
+  } else {
+    wrongCount[num] = (wrongCount[num] || 0) + 1;
+    const hints = HINTS[num];
+    const idx = Math.min(wrongCount[num] - 1, hints.length - 1);
+    fb.className = 'quiz-feedback wrong';
+    fb.innerHTML = '差一点点~ ' + hints[idx];
+  }
+}
+function checkComplete() {
+  if (correctCount >= 2) {
+    localStorage.setItem('catch-up-lv5-done', '1');
+    document.getElementById('complete-card').style.display = 'block';
+    document.getElementById('complete-card').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+</script>
+</body>
+</html>
